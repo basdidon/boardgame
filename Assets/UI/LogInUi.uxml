@@ -1,7 +1,7 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <Style src="project://database/Assets/USS/button.uss?fileID=7433441132597879392&amp;guid=6805a2b97cbd7514b93ce6bcfb10d1aa&amp;type=3#button" />
-    <ui:VisualElement usage-hints="None" style="justify-content: center; align-items: center; position: relative; width: 100%; height: 100%; flex-direction: column;">
-        <ui:TextField picking-mode="Ignore" value="PlayerName" text="PlayerName" name="PlayerName" tooltip="PlayerName" style="position: relative; align-items: stretch; opacity: 1; width: 60%; height: 30%; font-size: 64px; -unity-font-style: bold; -unity-text-align: middle-center; white-space: normal; border-left-color: rgb(255, 255, 255); border-right-color: rgb(255, 255, 255); border-top-color: rgb(255, 255, 255); border-bottom-color: rgb(255, 255, 255); flex-direction: column; justify-content: center; padding-left: 12px; padding-right: 12px; padding-top: 12px; padding-bottom: 12px;" />
-        <ui:Button text="LogIn" display-tooltip-when-elided="true" name="LogInBtn" class="Btn" style="width: auto; height: initial; margin-top: 10px; -unity-font-style: bold; font-size: 48px;" />
+    <Style src="project://database/Assets/UI/stylesheet.uss?fileID=7433441132597879392&amp;guid=9800fdcbc6b26894fbdd7d70d6986111&amp;type=3#stylesheet" />
+    <ui:VisualElement usage-hints="None" style="justify-content: center; align-items: center; position: relative; width: auto; height: auto; flex-direction: column; flex-grow: 1; padding-left: 30%; padding-right: 30%; padding-top: 20%; padding-bottom: 20%;">
+        <ui:TextField picking-mode="Ignore" value="filler text" text="PlayerName" name="PlayerName" tooltip="PlayerName" class="text-field" />
+        <ui:Button text="Confirm" display-tooltip-when-elided="true" name="LogInBtn" class="btn" />
     </ui:VisualElement>
 </ui:UXML>
