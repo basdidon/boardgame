@@ -1,11 +1,11 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <ui:VisualElement style="flex-direction: row; width: 100%;">
-        <ui:VisualElement name="CreateGameSession" style="width: 30%; height: 500px; justify-content: center; align-items: center;">
-            <ui:TextField value="filler text" text="filler text" name="RoomName" style="flex-direction: column; align-items: stretch; flex-grow: 0; justify-content: space-around; width: 80%; height: 30%; font-size: 64px; -unity-text-align: upper-center;" />
-            <ui:Button text="Button" display-tooltip-when-elided="true" style="width: 30%;" />
+    <Style src="project://database/Assets/UI/stylesheet.uss?fileID=7433441132597879392&amp;guid=9800fdcbc6b26894fbdd7d70d6986111&amp;type=3#stylesheet" />
+    <ui:VisualElement class="light-green-pastel-bg" style="flex-direction: row; width: 100%; flex-grow: 1; justify-content: flex-start;">
+        <ui:VisualElement name="CreateGameSession" style="flex-grow: 1; justify-content: flex-start; align-items: center; margin-bottom: 40%; margin-left: 0; margin-right: 0; margin-top: 0; background-color: rgb(61, 129, 236); padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0;">
+            <ui:TextField picking-mode="Ignore" value="RoomName" text="RoomName" name="RoomName" class="text-field" style="border-top-left-radius: 45px; border-bottom-left-radius: 45px; border-top-right-radius: 45px; border-bottom-right-radius: 45px;" />
+            <ui:Button text="CreateRoom" display-tooltip-when-elided="true" name="Button" class="btn" style="margin-left: 20px; margin-right: 20px; margin-top: 20px; margin-bottom: 20px;" />
         </ui:VisualElement>
-        <ui:VisualElement style="width: 70%; position: relative; flex-direction: column; flex-grow: 2;">
-            <ui:Label text="Label" display-tooltip-when-elided="true" style="width: 30%;" />
-        </ui:VisualElement>
+        <ui:VisualElement />
+        <ui:ListView focusable="true" header-title="RoomList" name="RoomList" style="flex-grow: 3;" />
     </ui:VisualElement>
 </ui:UXML>

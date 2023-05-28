@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 using Sirenix.OdinInspector;
 
-public class LoginUiHandle : UiDocHandler
+public class LoginUiHandler : UiDocHandler
 {
     public NetworkSpawner NetworkSpawner { get { return NetworkSpawner.Instance; } }
 
@@ -26,10 +26,11 @@ public class LoginUiHandle : UiDocHandler
         if (confirmBtn == null) Debug.LogError("confirmBtn not found");
 
         Debug.Log(playerNameTextField.text);
-        confirmBtn.RegisterCallback<ClickEvent>(LogIn);
+
+        confirmBtn.clicked += () => LogIn();
     }
 
-    public async void LogIn(ClickEvent @event)
+    public async void LogIn()
     {
         var result = await NetworkSpawner.Runner.StartGame(new StartGameArgs()
         {
@@ -40,7 +41,7 @@ public class LoginUiHandle : UiDocHandler
 
         if (result.Ok)
         {
-            UiDocControls.Instance.SetActiveUiDoc("Lobby");
+            UiDocControls.Instance.ActiveUiDoc(UiMenus.Lobby);
         }
         else
         {

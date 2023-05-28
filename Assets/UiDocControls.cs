@@ -5,41 +5,50 @@ using UnityEngine.UIElements;
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
 
+[RequireComponent(typeof(UIDocument))]
 public class UiDocControls : SerializedMonoBehaviour
 {
     public static UiDocControls Instance { get; private set; }
+    public UIDocument UIDocument { get; private set; }
 
-    public ScriptableUiPanel scriptablePanel;
+    public ScriptableUiPanel ScriptableUiPanel;
+    public Dictionary<UiMenus, MonoBehaviour> handlers;
 
-    public Dictionary<string,UiDocHandler> uiDict;
-
-    UiDocHandler ActivatedUiDoc { get; set; }
-    public void SetActiveUiDoc(string name)
+    public void ActiveUiDoc(UiMenus uiMenus)
     {
-        if (uiDict.TryGetValue(name,out UiDocHandler handler))
+        if (ScriptableUiPanel.uiDocs.TryGetValue(uiMenus, out VisualTreeAsset asset))
         {
-            ActivatedUiDoc?.Deactive();
-            ActivatedUiDoc = handler;
-            ActivatedUiDoc.Active();
+            UIDocument.visualTreeAsset = asset;
+        }
+
+        foreach (var component in handlers.Values)
+        {
+            component.enabled = false;
+        }
+
+        if (handlers.TryGetValue(uiMenus, out MonoBehaviour handler))
+        {
+            handler.enabled = true;
         }
     }
 
     private void Awake()
     {
         if (Instance != null && Instance != this)
-        {
             Destroy(this);
-        }
         else
-        {
             Instance = this;
-        }
-    }
 
+        UIDocument = GetComponent<UIDocument>();
+    }
+    
     private void Start()
     {
-        uiDict = new Dictionary<string, UiDocHandler>();
-        scriptablePanel.Intialize();
-        SetActiveUiDoc("LogIn");
+        handlers = new Dictionary<UiMenus, MonoBehaviour>
+        {
+            { UiMenus.Login, gameObject.AddComponent<LoginUiHandler>() }
+        };
+
+        ActiveUiDoc(UiMenus.Login);
     }
 }
