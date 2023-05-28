@@ -2,32 +2,45 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Fusion;
-using Fusion.Sockets;
 using UnityEngine.SceneManagement;
-using TMPro;
+using UnityEngine.UIElements;
+using Sirenix.OdinInspector;
 
-public class LoginUiHandle : SimulationBehaviour
+public class LoginUiHandle : UiDocHandler
 {
-    public TextMeshProUGUI playerNameInput;
+    public NetworkSpawner NetworkSpawner { get { return NetworkSpawner.Instance; } }
 
-    public async void LogIn()
+    [BoxGroup("UiValue")]
+    public TextField playerNameTextField;
+    [BoxGroup("UiValue")]
+    public Button confirmBtn;
+
+    private void OnEnable()
     {
-        if (playerNameInput.text.Length < 1)
-        {
-            Debug.LogError("Input your name.");
-            return;
-        }
+        UiDoc = GetComponent<UIDocument>();
 
-        var result = await NetworkSpawner._runner.StartGame(new StartGameArgs()
+        playerNameTextField = (TextField) UiDoc.rootVisualElement.Q("PlayerName");
+        confirmBtn = (Button) UiDoc.rootVisualElement.Q("LogInBtn");
+
+        if (playerNameTextField == null) Debug.LogError("playerNameTextField not found.");
+        if (confirmBtn == null) Debug.LogError("confirmBtn not found");
+
+        Debug.Log(playerNameTextField.text);
+        confirmBtn.RegisterCallback<ClickEvent>(LogIn);
+    }
+
+    public async void LogIn(ClickEvent @event)
+    {
+        var result = await NetworkSpawner.Runner.StartGame(new StartGameArgs()
         {
             GameMode = GameMode.AutoHostOrClient, // or GameMode.Shared
             Scene = SceneManager.GetActiveScene().buildIndex,
-            SceneManager = gameObject.AddComponent<NetworkSceneManagerDefault>()
+            SceneManager = NetworkSpawner.gameObject.AddComponent<NetworkSceneManagerDefault>()
         });
 
         if (result.Ok)
         {
-            // all good
+            UiDocControls.Instance.SetActiveUiDoc("Lobby");
         }
         else
         {

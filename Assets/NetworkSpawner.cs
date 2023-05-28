@@ -9,33 +9,55 @@ using System.Threading.Tasks;
 
 public class NetworkSpawner : MonoBehaviour, INetworkRunnerCallbacks
 {
-    public static NetworkRunner _runner;
+    static NetworkSpawner instance;
+    public static NetworkSpawner Instance
+    {
+        get
+        {
+            if (instance == null)
+            {
+                GameObject go = new GameObject("NetworkSpawner");
+                instance = go.AddComponent<NetworkSpawner>(); 
+            }
+            return instance;
+        }
+    }
 
-    [SerializeField] GameObject lobbyPanel;
-    [SerializeField] GameObject roomPanel;
+    public NetworkRunner Runner { get; private set; }
 
     [SerializeField] List<SessionInfo> sessionInfoList;
+
+    private void Awake() 
+    {
+        if(instance == null) instance = this;
+        Runner = gameObject.AddComponent<NetworkRunner>();
+    }
+
+    private void Start()
+    {
+        sessionInfoList = new List<SessionInfo>();
+    }
 
     public void CreateGame()
     {
         StartGame(GameMode.Host);
         Debug.Log("CreateGame");
-        _runner.name = "Host";
+        Runner.name = "Host";
     }
 
     public void JoinGame()
     {
-        _runner.JoinSessionLobby(SessionLobby.ClientServer, "TestRoom");
+        Runner.JoinSessionLobby(SessionLobby.ClientServer, "TestRoom");
     }
 
     public async void StartGame(GameMode mode)
     {
         // Create the Fusion runner and let it know that we will be providing user input
         // _runner = gameObject.AddComponent<NetworkRunner>();
-        _runner.ProvideInput = true;
+        Runner.ProvideInput = true;
 
         // Start or join (depends on gamemode) a session with a specific name
-        await _runner.StartGame(new StartGameArgs()
+        await Runner.StartGame(new StartGameArgs()
         {
             GameMode = mode,
             SessionName = "TestRoom",
@@ -44,41 +66,16 @@ public class NetworkSpawner : MonoBehaviour, INetworkRunnerCallbacks
         });
     }
 
-    private void Start()
-    {
-        _runner = gameObject.AddComponent<NetworkRunner>();
-        sessionInfoList = new List<SessionInfo>();
-    }
-
-    public async Task<StartGameResult> StartPlayer(NetworkRunner runner)
-    {
-        var result = await runner.StartGame(new StartGameArgs()
-        {
-            GameMode = GameMode.AutoHostOrClient, // or GameMode.Shared
-        });
-
-        if (result.Ok)
-        {
-            
-        }
-        else
-        {
-            Debug.LogError($"Failed to Start: {result.ShutdownReason}");
-        }
-
-        return result;
-    }
-
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player) {
-        lobbyPanel.SetActive(false);
-        roomPanel.SetActive(true);
-
+        Debug.Log($"player {player.PlayerId} has joined.");
     }
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) { }
     public void OnInput(NetworkRunner runner, NetworkInput input) { }
     public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason) { }
-    public void OnConnectedToServer(NetworkRunner runner) { }
+    public void OnConnectedToServer(NetworkRunner runner) {
+        Debug.Log("OnConnectedToServer()");
+    }
     public void OnDisconnectedFromServer(NetworkRunner runner) {}
     public void OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request, byte[] token) { }
     public void OnConnectFailed(NetworkRunner runner, NetAddress remoteAddress, NetConnectFailedReason reason) { }
