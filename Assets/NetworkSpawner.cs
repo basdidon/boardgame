@@ -5,10 +5,11 @@ using Fusion;
 using Fusion.Sockets;
 using System;
 using UnityEngine.SceneManagement;
+using System.Threading.Tasks;
 
 public class NetworkSpawner : MonoBehaviour, INetworkRunnerCallbacks
 {
-    private NetworkRunner _runner;
+    public static NetworkRunner _runner;
 
     [SerializeField] GameObject lobbyPanel;
     [SerializeField] GameObject roomPanel;
@@ -47,6 +48,25 @@ public class NetworkSpawner : MonoBehaviour, INetworkRunnerCallbacks
     {
         _runner = gameObject.AddComponent<NetworkRunner>();
         sessionInfoList = new List<SessionInfo>();
+    }
+
+    public async Task<StartGameResult> StartPlayer(NetworkRunner runner)
+    {
+        var result = await runner.StartGame(new StartGameArgs()
+        {
+            GameMode = GameMode.AutoHostOrClient, // or GameMode.Shared
+        });
+
+        if (result.Ok)
+        {
+            
+        }
+        else
+        {
+            Debug.LogError($"Failed to Start: {result.ShutdownReason}");
+        }
+
+        return result;
     }
 
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player) {
