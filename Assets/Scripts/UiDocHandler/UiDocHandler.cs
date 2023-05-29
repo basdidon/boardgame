@@ -7,13 +7,13 @@ public class UiDocHandler : MonoBehaviour
 {
     public UIDocument UiDoc { get; protected set; }
 
-    public virtual void Active()
+    public virtual void Show()
     {
-        gameObject.SetActive(true);
+        UiDoc.rootVisualElement.style.display = DisplayStyle.Flex;
     }
-    public virtual void Deactive()
+    public virtual void Hide()
     {
-        gameObject.SetActive(false);
+        UiDoc.rootVisualElement.style.display = DisplayStyle.Flex;
     }
 }
 

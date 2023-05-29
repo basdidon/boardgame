@@ -5,31 +5,24 @@ using UnityEngine.UIElements;
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
 
-[RequireComponent(typeof(UIDocument))]
 public class UiDocControls : SerializedMonoBehaviour
 {
     public static UiDocControls Instance { get; private set; }
     public UIDocument UIDocument { get; private set; }
 
-    public ScriptableUiPanel ScriptableUiPanel;
-    public Dictionary<UiMenus, MonoBehaviour> handlers;
+    [OdinSerialize] public MenuUiScriptableObject ScriptableMenuUi { get; set; }
+    [OdinSerialize] public Dictionary<UiMenus, UiDocHandler> DocHandlers { get; set; }
 
+    
     public void ActiveUiDoc(UiMenus uiMenus)
     {
-        if (ScriptableUiPanel.uiDocs.TryGetValue(uiMenus, out VisualTreeAsset asset))
-        {
-            UIDocument.visualTreeAsset = asset;
+        foreach (var o in DocHandlers.Values) {
+            o.Hide();
         }
 
-        foreach (var component in handlers.Values)
-        {
-            component.enabled = false;
-        }
-
-        if (handlers.TryGetValue(uiMenus, out MonoBehaviour handler))
-        {
-            handler.enabled = true;
-        }
+        if (DocHandlers.TryGetValue(uiMenus, out UiDocHandler handler))
+            handler.Show();
+        
     }
 
     private void Awake()
@@ -40,15 +33,21 @@ public class UiDocControls : SerializedMonoBehaviour
             Instance = this;
 
         UIDocument = GetComponent<UIDocument>();
+        DocHandlers = new Dictionary<UiMenus, UiDocHandler>();
+
+        foreach (var menuUi in ScriptableMenuUi.DocUiPrefabs)
+        {
+            var clone = Instantiate(menuUi.Value, transform);
+
+            if (clone.TryGetComponent(out UiDocHandler handler))
+            {
+                DocHandlers.Add(menuUi.Key, handler);
+            }
+        }
     }
     
     private void Start()
     {
-        handlers = new Dictionary<UiMenus, MonoBehaviour>
-        {
-            { UiMenus.Login, gameObject.AddComponent<LoginUiHandler>() }
-        };
-
         ActiveUiDoc(UiMenus.Login);
     }
 }

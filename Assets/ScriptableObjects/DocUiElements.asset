@@ -9,23 +9,23 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7863086629fc93f43b87568a3f7ca6b6, type: 3}
-  m_Name: DocUiElement
+  m_Script: {fileID: 11500000, guid: db392f2fb54cf8b4c8c4152d411857b9, type: 3}
+  m_Name: DocUiElements
   m_EditorClassIdentifier: 
   serializationData:
     SerializedFormat: 2
     SerializedBytes: 
     ReferencedUnityObjects:
-    - {fileID: 9197481963319205126, guid: bd48a43c2bc82ab469d1ef26edf99975, type: 3}
+    - {fileID: 2865394455401309129, guid: 4273b51707fcc3646a6514f8361430b8, type: 3}
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes:
-    - Name: uiDocs
+    - Name: DocUiPrefabs
       Entry: 7
-      Data: 0|System.Collections.Generic.Dictionary`2[[UiMenus, Assembly-CSharp],[UnityEngine.UIElements.VisualTreeAsset,
-        UnityEngine.UIElementsModule]], mscorlib
+      Data: 0|System.Collections.Generic.Dictionary`2[[UiMenus, Assembly-CSharp],[UnityEngine.GameObject,
+        UnityEngine.CoreModule]], mscorlib
     - Name: comparer
       Entry: 7
       Data: 1|System.Collections.Generic.EnumEqualityComparer`1[[UiMenus, Assembly-CSharp]],

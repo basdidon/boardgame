@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 using Sirenix.OdinInspector;
 
-public class LoginUiHandler : UiDocHandler
+public sealed class LoginUiHandler : UiDocHandler
 {
     public NetworkSpawner NetworkSpawner { get { return NetworkSpawner.Instance; } }
 
