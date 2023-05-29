@@ -13,7 +13,7 @@ public class UiDocHandler : MonoBehaviour
     }
     public virtual void Hide()
     {
-        UiDoc.rootVisualElement.style.display = DisplayStyle.Flex;
+        UiDoc.rootVisualElement.style.display = DisplayStyle.None;
     }
 }
 

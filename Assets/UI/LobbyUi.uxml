@@ -3,9 +3,8 @@
     <ui:VisualElement class="light-green-pastel-bg" style="flex-direction: row; width: 100%; flex-grow: 1; justify-content: flex-start;">
         <ui:VisualElement name="CreateGameSession" style="flex-grow: 1; justify-content: flex-start; align-items: center; margin-bottom: 40%; margin-left: 0; margin-right: 0; margin-top: 0; background-color: rgb(61, 129, 236); padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0;">
             <ui:TextField picking-mode="Ignore" value="RoomName" text="RoomName" name="RoomName" class="text-field" style="border-top-left-radius: 45px; border-bottom-left-radius: 45px; border-top-right-radius: 45px; border-bottom-right-radius: 45px;" />
-            <ui:Button text="CreateRoom" display-tooltip-when-elided="true" name="Button" class="btn" style="margin-left: 20px; margin-right: 20px; margin-top: 20px; margin-bottom: 20px;" />
+            <ui:Button text="CreateRoom" display-tooltip-when-elided="true" name="CreateRoom" class="btn" style="margin-left: 20px; margin-right: 20px; margin-top: 20px; margin-bottom: 20px;" />
         </ui:VisualElement>
-        <ui:VisualElement />
         <ui:ListView focusable="true" header-title="RoomList" name="RoomList" style="flex-grow: 3;" />
     </ui:VisualElement>
 </ui:UXML>

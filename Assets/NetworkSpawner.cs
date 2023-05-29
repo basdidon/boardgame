@@ -6,8 +6,11 @@ using Fusion.Sockets;
 using System;
 using UnityEngine.SceneManagement;
 using System.Threading.Tasks;
+using Sirenix.OdinInspector;
+using Sirenix.Serialization;
+using UnityEngine.Events;
 
-public class NetworkSpawner : MonoBehaviour, INetworkRunnerCallbacks
+public class NetworkSpawner : SerializedMonoBehaviour, INetworkRunnerCallbacks
 {
     static NetworkSpawner instance;
     public static NetworkSpawner Instance
@@ -25,12 +28,18 @@ public class NetworkSpawner : MonoBehaviour, INetworkRunnerCallbacks
 
     public NetworkRunner Runner { get; private set; }
 
-    [SerializeField] List<SessionInfo> sessionInfoList;
+    [OdinSerialize] public List<SessionInfo> sessionInfoList;
+
+    // event
+    public UnityAction OnSessionListUpdatedAction;
+    public delegate List<SessionInfo> OnSessionListUpdatedDelegate();
 
     private void Awake() 
     {
         if(instance == null) instance = this;
         Runner = gameObject.AddComponent<NetworkRunner>();
+
+        OnSessionListUpdatedAction += () => Debug.Log("NetworkSpawner from");
     }
 
     private void Start()
@@ -38,16 +47,37 @@ public class NetworkSpawner : MonoBehaviour, INetworkRunnerCallbacks
         sessionInfoList = new List<SessionInfo>();
     }
 
-    public void CreateGame()
+    public async void StartHost(string roomName)
     {
-        StartGame(GameMode.Host);
-        Debug.Log("CreateGame");
-        Runner.name = "Host";
+        var result = await Runner.StartGame(new StartGameArgs()
+        {
+            GameMode = GameMode.Host,
+            SceneManager = gameObject.AddComponent<NetworkSceneManagerDefault>(),
+            CustomLobbyName = roomName,
+        });
+
+        if (result.Ok)
+        {
+            Debug.Log($"started Host: {roomName}");
+        }
+        else
+        {
+            Debug.LogError($"Failed to Start: {result.ShutdownReason}");
+        }
     }
 
-    public void JoinGame()
+    public async void JoinLobby()
     {
-        Runner.JoinSessionLobby(SessionLobby.ClientServer, "TestRoom");
+        var result = await Runner.JoinSessionLobby(SessionLobby.ClientServer, "MainLobby");
+
+        if (result.Ok)
+        {
+            UiDocControls.Instance.ActiveUiDoc(UiMenus.Lobby);
+        }
+        else
+        {
+            Debug.LogError($"Failed to Start: {result.ShutdownReason}");
+        }
     }
 
     public async void StartGame(GameMode mode)
@@ -82,20 +112,14 @@ public class NetworkSpawner : MonoBehaviour, INetworkRunnerCallbacks
     public void OnUserSimulationMessage(NetworkRunner runner, SimulationMessagePtr message) { }
     public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList) {
         Debug.Log("OnSessionListUpdated");
-
-        foreach(var sessionInfo in sessionInfoList)
-        {
-            // destroy
-        }
-        sessionInfoList.Clear();
-        foreach(var sessionInfo in sessionList)
-        {
-            // create ui item
-        }
+        sessionInfoList = sessionList;
+        // call action here !!!!!!
     }
     public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data) { }
     public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken) { }
     public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ArraySegment<byte> data) { }
     public void OnSceneLoadDone(NetworkRunner runner) { }
     public void OnSceneLoadStart(NetworkRunner runner) { }
+
+
 }

@@ -16,9 +16,8 @@ public class UiDocControls : SerializedMonoBehaviour
     
     public void ActiveUiDoc(UiMenus uiMenus)
     {
-        foreach (var o in DocHandlers.Values) {
-            o.Hide();
-        }
+        foreach (var _handler in DocHandlers.Values)   
+            _handler.Hide();
 
         if (DocHandlers.TryGetValue(uiMenus, out UiDocHandler handler))
             handler.Show();

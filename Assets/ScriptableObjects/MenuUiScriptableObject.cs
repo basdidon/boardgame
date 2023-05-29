@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
 using Sirenix.OdinInspector;
-using Sirenix.Serialization;
 
 public enum UiMenus
 {
