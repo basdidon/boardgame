@@ -5,7 +5,6 @@ using Fusion;
 using Fusion.Sockets;
 using System;
 using UnityEngine.SceneManagement;
-using System.Threading.Tasks;
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
 using UnityEngine.Events;
@@ -13,47 +12,66 @@ using UnityEngine.Events;
 public class NetworkSpawner : SerializedMonoBehaviour, INetworkRunnerCallbacks
 {
     static NetworkSpawner instance;
-    public static NetworkSpawner Instance
+    public static NetworkSpawner Instance 
     {
         get
         {
             if (instance == null)
             {
                 GameObject go = new GameObject("NetworkSpawner");
-                instance = go.AddComponent<NetworkSpawner>(); 
+                instance = go.AddComponent<NetworkSpawner>();
             }
             return instance;
         }
     }
-
     public NetworkRunner Runner { get; private set; }
 
-    [OdinSerialize] public List<SessionInfo> sessionInfoList;
-
     // event
-    public UnityAction OnSessionListUpdatedAction;
-    public delegate List<SessionInfo> OnSessionListUpdatedDelegate();
+    public delegate void OnSessionListUpdatedDelegate(List<SessionInfo> newList);
+    public OnSessionListUpdatedDelegate sessionListUpdateDelegate;
+
+    public Inputs Inputs { get; set; }
+
+    private void OnEnable(){ Inputs.Enable(); }
+    private void OnDisable(){ Inputs.Disable(); }
 
     private void Awake() 
     {
         if(instance == null) instance = this;
+
+        gameObject.AddComponent<PlayerData>();
         Runner = gameObject.AddComponent<NetworkRunner>();
-
-        OnSessionListUpdatedAction += () => Debug.Log("NetworkSpawner from");
+        Inputs = new Inputs();
+        Inputs.Menu.Quit.performed += _ => Application.Quit();        
     }
 
-    private void Start()
+    // join LobbySession to getList of gameSession
+    public async void JoinLobby(string playerName)
     {
-        sessionInfoList = new List<SessionInfo>();
+        var result = await Runner.JoinSessionLobby(SessionLobby.ClientServer, "MainLobby");
+
+        if (result.Ok)
+        {
+            PlayerData.Instance.PlayerName = playerName;
+            UiDocControls.Instance.ActiveUiDoc(UiMenus.Lobby);
+        }
+        else
+        {
+            Debug.LogError($"Failed to Start: {result.ShutdownReason}");
+        }
     }
 
+
+    // Create gameSession
     public async void StartHost(string roomName)
     {
         var result = await Runner.StartGame(new StartGameArgs()
         {
             GameMode = GameMode.Host,
             SceneManager = gameObject.AddComponent<NetworkSceneManagerDefault>(),
-            CustomLobbyName = roomName,
+            Scene = 1,
+            //CustomLobbyName = roomName,
+            SessionName = roomName,
         });
 
         if (result.Ok)
@@ -66,17 +84,22 @@ public class NetworkSpawner : SerializedMonoBehaviour, INetworkRunnerCallbacks
         }
     }
 
-    public async void JoinLobby()
+    public async void JoinGame(string roomName)
     {
-        var result = await Runner.JoinSessionLobby(SessionLobby.ClientServer, "MainLobby");
+        var result = await Runner.StartGame(new StartGameArgs()
+        {
+            GameMode = GameMode.Client,
+            SessionName = roomName,
+            SceneManager = gameObject.AddComponent<NetworkSceneManagerDefault>()
+        });
 
         if (result.Ok)
         {
-            UiDocControls.Instance.ActiveUiDoc(UiMenus.Lobby);
+            Debug.Log($"started Join: {roomName}");
         }
         else
         {
-            Debug.LogError($"Failed to Start: {result.ShutdownReason}");
+            Debug.LogError($"Failed to Join: {result.ShutdownReason}");
         }
     }
 
@@ -98,6 +121,19 @@ public class NetworkSpawner : SerializedMonoBehaviour, INetworkRunnerCallbacks
 
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player) {
         Debug.Log($"player {player.PlayerId} has joined.");
+        if (Runner.IsServer)
+        {
+            var playerPrefab = Resources.Load("PlayerPrefab") as GameObject;
+
+            if(playerPrefab != null)
+            {
+                Runner.Spawn(playerPrefab, Vector3.zero);
+            }
+            else
+            {
+                Debug.Log("Not found : Asset/Resources/PlayerPrefab");
+            }
+        }
     }
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) { }
     public void OnInput(NetworkRunner runner, NetworkInput input) { }
@@ -112,14 +148,11 @@ public class NetworkSpawner : SerializedMonoBehaviour, INetworkRunnerCallbacks
     public void OnUserSimulationMessage(NetworkRunner runner, SimulationMessagePtr message) { }
     public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList) {
         Debug.Log("OnSessionListUpdated");
-        sessionInfoList = sessionList;
-        // call action here !!!!!!
+        sessionListUpdateDelegate(sessionList);
     }
     public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data) { }
     public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken) { }
     public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ArraySegment<byte> data) { }
     public void OnSceneLoadDone(NetworkRunner runner) { }
     public void OnSceneLoadStart(NetworkRunner runner) { }
-
-
 }

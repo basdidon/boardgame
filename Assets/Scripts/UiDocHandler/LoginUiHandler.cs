@@ -22,6 +22,6 @@ public sealed class LoginUiHandler : UiDocHandler
         if (confirmBtn == null) Debug.LogError("confirmBtn not found");
 
         Debug.Log(playerNameTextField.text);
-        confirmBtn.clicked += () => NetworkSpawner.JoinLobby();
+        confirmBtn.clicked += () => NetworkSpawner.JoinLobby(playerNameTextField.text);
     }
 }

@@ -9,13 +9,14 @@ using Sirenix.OdinInspector;
 public class RoomListEntryController
 {
     Label NameLabel;
+    Label PlayerCountLabel;
 
     //This function retrieves a reference to the 
     //character name label inside the UI element.
-
     public void SetVisualElement(VisualElement visualElement)
     {
         NameLabel = visualElement.Q<Label>("RoomName");
+        PlayerCountLabel = visualElement.Q<Label>("PlayerCount");
     }
 
     //This function receives the character whose name this list 
@@ -23,9 +24,10 @@ public class RoomListEntryController
     //in a `ListView` are pooled and reused, it's necessary to 
     //have a `Set` function to change which character's data to display.
     
-    public void SetNameLabel(string name)
+    public void SetNameLabel(string name,int playerCount,int maxPlayer)
     {
         NameLabel.text = name;
+        PlayerCountLabel.text = $"{playerCount} / {maxPlayer}";
     }
 }
 
@@ -40,8 +42,15 @@ public class LobbyUiHandler : UiDocHandler
     // UXML template for list entries
     public VisualTreeAsset ListEntryTemplate;
 
+    List<SessionInfo> sessions;
+    List<SessionInfo> Sessions { get { return sessions; } set { sessions = value; roomListView.itemsSource = sessions; } }
+
     private void OnEnable()
     {
+        if(NetworkSpawner.Runner == null)
+        {
+            Debug.LogError("Runner can't be null");
+        }
         UiDoc = GetComponent<UIDocument>();
 
         roomNameTextField = UiDoc.rootVisualElement.Q<TextField>("RoomName");
@@ -74,12 +83,14 @@ public class LobbyUiHandler : UiDocHandler
 
         roomListView.bindItem = (item, index) =>
         {
-            (item.userData as RoomListEntryController).SetNameLabel(NetworkSpawner.Instance.sessionInfoList[index].Name);
+            var session = Sessions[index];
+            (item.userData as RoomListEntryController).SetNameLabel(session.Name,session.PlayerCount,session.MaxPlayers); //NetworkSpawner.Instance.sessionInfoList[index].Name
         };
 
-        roomListView.itemsSource = NetworkSpawner.Instance.sessionInfoList;
+        roomListView.selectionType = SelectionType.Single;
+        roomListView.onSelectionChange += _ => NetworkSpawner.JoinGame((roomListView.selectedItem as SessionInfo).Name);
 
         // let this class update SessionList, when INetworkRunnerCallbacks.OnSessionListUpdated was called
-        NetworkSpawner.Instance.OnSessionListUpdatedAction += () => roomListView.itemsSource = NetworkSpawner.Instance.sessionInfoList;
+        NetworkSpawner.Instance.sessionListUpdateDelegate += (newList) => Sessions = newList;
     }
 }

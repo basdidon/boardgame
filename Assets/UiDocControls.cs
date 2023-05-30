@@ -12,7 +12,6 @@ public class UiDocControls : SerializedMonoBehaviour
 
     [OdinSerialize] public MenuUiScriptableObject ScriptableMenuUi { get; set; }
     [OdinSerialize] public Dictionary<UiMenus, UiDocHandler> DocHandlers { get; set; }
-
     
     public void ActiveUiDoc(UiMenus uiMenus)
     {

@@ -1,0 +1,34 @@
+{
+    "name": "Inputs",
+    "maps": [
+        {
+            "name": "Menu",
+            "id": "d7d5cb0d-74e5-496b-a8f7-8c6c7ae44202",
+            "actions": [
+                {
+                    "name": "Quit",
+                    "type": "PassThrough",
+                    "id": "f594c4ce-c766-4590-9be2-665ca21b74f2",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "1f67d512-e3fe-42dd-a36f-d67259ace471",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Quit",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}

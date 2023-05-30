@@ -1,0 +1,9 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement name="main-contrainer">
+        <ui:VisualElement name="header-contrainer" style="flex-direction: row; flex-grow: 1; background-color: rgba(72, 72, 72, 255);">
+            <ui:Label text="[RoomName]" display-tooltip-when-elided="true" name="room-name" style="-unity-text-align: middle-center; align-items: center; justify-content: center; flex-grow: 1; font-size: 64px; white-space: normal;" />
+            <ui:Button display-tooltip-when-elided="true" name="back-button" style="width: 100px; height: 100px; position: relative; margin-left: auto; background-image: url(&apos;project://database/Assets/UI%20Toolkit/UnityThemes/UnityDefaultRuntimeTheme.tss?fileID=-4528830608231651361&amp;guid=cc5c7a60548f26a48b56d5e804da0634&amp;type=3#arrow-left@2x&apos;); margin-right: 0; margin-top: 0; margin-bottom: 0; background-color: rgba(60, 142, 25, 255);" />
+        </ui:VisualElement>
+        <ui:VisualElement name="body-contrainer" />
+    </ui:VisualElement>
+</ui:UXML>
