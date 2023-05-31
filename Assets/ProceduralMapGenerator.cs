@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
+using Fusion;
 
 [System.Serializable]
 public class Wave
@@ -26,7 +27,7 @@ public class BiomeTempData
     }
 }
 
-public class ProceduralMapGenerator : SerializedMonoBehaviour
+public class ProceduralMapGenerator : NetworkBehaviour
 {
     [BoxGroup("Dimensions", Order = -10)]
     [SerializeField] Vector3Int mapSize = new Vector3Int(100, 0, 100);
@@ -37,20 +38,19 @@ public class ProceduralMapGenerator : SerializedMonoBehaviour
     [PropertyOrder(-2)]
     public bool isOneSeed;
     [ShowIf("isOneSeed")]
-    [OdinSerialize]
     [BoxGroup("Waves")]
     [PropertyOrder(-1)]
     [OnValueChanged("OneSeedChanged")]
     [InlineButton("RandomOneSeed", SdfIconType.Dice6Fill, "Random")]
     public int OneSeed { get; set; }
-    public void OneSeedChanged(int newValue)
+    public void OneSeedChanged(int newValue) 
     {
         IEnumerator[] enumerators = { heightWaves.GetEnumerator(), heatWaves.GetEnumerator(), moistureWaves.GetEnumerator() };
         foreach(var e in enumerators)
             while (e.MoveNext())
                 (e.Current as Wave).seed = newValue;    
     }
-    public void RandomOneSeed()
+    public void RandomOneSeed() 
     {
         OneSeed = Random.Range(0, 10000);
         OneSeedChanged(OneSeed);
@@ -74,7 +74,6 @@ public class ProceduralMapGenerator : SerializedMonoBehaviour
     private float[,] heatMap;
 
     [Space]
-    [OdinSerialize]
     [ShowInInspector]
     Dictionary<Vector3Int, GameObject> cloneDict;
 
@@ -110,11 +109,10 @@ public class ProceduralMapGenerator : SerializedMonoBehaviour
     {
         var x = cellPos.x;
         var z = cellPos.z;
-        Vector3Int cellPosion = new Vector3Int(x, 0, z);
         GameObject biomeTile = GetBiome(heightMap[x, z], moistureMap[x, z], heatMap[x, z]).GetTilePrefab();
-        GameObject clone = Instantiate(biomeTile, cellPosion, Quaternion.identity, transform);
+        GameObject clone = Instantiate(biomeTile, cellPos, Quaternion.identity, transform);
         clone.name = string.Format("Node {0},{1}", x, z);
-        cloneDict.Add(cellPosion, clone);
+        cloneDict.Add(cellPos, clone);
         return clone;
     }
 
@@ -269,6 +267,38 @@ public class ProceduralMapGenerator : SerializedMonoBehaviour
             timeElapsed += Time.deltaTime;
             yield return null;
             transform.position = targetPos;
+        }
+    }
+
+    NetworkObject NetworkSpawnCellTile(Vector3Int cellPos)
+    {
+        var x = cellPos.x;
+        var z = cellPos.z;
+        GameObject biomeTile = GetBiome(heightMap[x, z], moistureMap[x, z], heatMap[x, z]).GetTilePrefab();
+
+        var clone = NetworkSpawner.Instance.Runner.Spawn(biomeTile, cellPos, Quaternion.identity);
+        if (clone != null)
+        {
+            clone.name = string.Format("Node {0},{1}", x, z);
+            cloneDict.Add(cellPos, clone.gameObject);
+        }
+
+        return clone;
+    }
+
+    [Button]
+    public void NetworkSpawnTiles(bool isNewSeed)
+    {
+        if (isNewSeed) RandomOneSeed();
+        ResetLevel();
+        GenerateMap();
+
+        for (int x = 0; x < mapSize.x; ++x)
+        {
+            for (int z = 0; z < mapSize.z; ++z)
+            {
+                NetworkSpawnCellTile(new Vector3Int(x, 0, z));
+            }
         }
     }
 }

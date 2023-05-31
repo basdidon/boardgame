@@ -231,6 +231,7 @@ GameObject:
   m_Component:
   - component: {fileID: 817469385}
   - component: {fileID: 817469386}
+  - component: {fileID: 817469387}
   m_Layer: 0
   m_Name: Tiles
   m_TagString: Untagged
@@ -265,21 +266,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7dcf9391b3cf5d46b9c9e2fed5f71d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
-    ReferencedUnityObjects: []
-    SerializedBytesString: 
-    Prefab: {fileID: 0}
-    PrefabModificationsReferencedUnityObjects: []
-    PrefabModifications: []
-    SerializationNodes:
-    - Name: OneSeed
-      Entry: 3
-      Data: 252
-    - Name: cloneDict
-      Entry: 6
-      Data: 
+  _interpolationDataSource: 0
   mapSize: {x: 20, y: 0, z: 20}
   scale: 1
   offset: {x: 0, y: 0}
@@ -309,6 +296,30 @@ MonoBehaviour:
   isFallInTiles: 0
   fallingHeight: 5
   fallingDuration: 1
+--- !u!114 &817469387
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 817469384}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObjectInterest: 1
+  DefaultInterestGroups: []
+  DestroyWhenStateAuthorityLeaves: 0
+  AllowStateAuthorityOverride: 1
+  AoiPositionSource: {fileID: 0}
+  Flags: 2561
+  NetworkGuid:
+    RawGuidValue: 1fbef2b390b548dfbe53287d1d66eb09
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 817469386}
+  SimulationBehaviours: []
 --- !u!1 &848052635
 GameObject:
   m_ObjectHideFlags: 0

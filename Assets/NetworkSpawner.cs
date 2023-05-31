@@ -123,16 +123,13 @@ public class NetworkSpawner : SerializedMonoBehaviour, INetworkRunnerCallbacks
         Debug.Log($"player {player.PlayerId} has joined.");
         if (Runner.IsServer)
         {
+            // spawn Player
             var playerPrefab = Resources.Load("PlayerPrefab") as GameObject;
 
             if(playerPrefab != null)
-            {
                 Runner.Spawn(playerPrefab, Vector3.zero);
-            }
             else
-            {
                 Debug.Log("Not found : Asset/Resources/PlayerPrefab");
-            }
         }
     }
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) { }
@@ -153,6 +150,13 @@ public class NetworkSpawner : SerializedMonoBehaviour, INetworkRunnerCallbacks
     public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data) { }
     public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken) { }
     public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ArraySegment<byte> data) { }
-    public void OnSceneLoadDone(NetworkRunner runner) { }
+    public void OnSceneLoadDone(NetworkRunner runner) {
+        // spawn tiles
+        if (Runner.IsServer)
+        {
+            var generator = FindObjectOfType<ProceduralMapGenerator>();
+            generator.NetworkSpawnTiles(false);
+        }
+    }
     public void OnSceneLoadStart(NetworkRunner runner) { }
 }
