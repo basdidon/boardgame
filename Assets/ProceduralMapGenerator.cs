@@ -91,7 +91,6 @@ public class ProceduralMapGenerator : NetworkBehaviour
     /*  - genlevel
      *  -- spawn
      *  -- spawnWithFallAnimation
-     *
      */
 
 
@@ -162,7 +161,7 @@ public class ProceduralMapGenerator : NetworkBehaviour
         cloneDict.Clear();
     }
 
-    BiomePreset GetBiome(float height, float moisture, float heat)
+    public BiomePreset GetBiome(float height, float moisture, float heat)
     {
         List<BiomeTempData> biomeTemp = new List<BiomeTempData>();
 
@@ -264,12 +263,14 @@ public class ProceduralMapGenerator : NetworkBehaviour
         while (timeElapsed < fallingDuration)
         {
             transform.position = Vector3.Lerp(startPos, targetPos, timeElapsed / fallingDuration);
-            timeElapsed += Time.deltaTime;
             yield return null;
+            timeElapsed += Time.deltaTime;
             transform.position = targetPos;
         }
     }
 
+
+    /// Network Spawn
     NetworkObject NetworkSpawnCellTile(Vector3Int cellPos)
     {
         var x = cellPos.x;

@@ -127,7 +127,7 @@ public class NetworkSpawner : SerializedMonoBehaviour, INetworkRunnerCallbacks
             var playerPrefab = Resources.Load("PlayerPrefab") as GameObject;
 
             if(playerPrefab != null)
-                Runner.Spawn(playerPrefab, Vector3.zero);
+                Runner.Spawn(playerPrefab, Vector3.right * player.PlayerId);
             else
                 Debug.Log("Not found : Asset/Resources/PlayerPrefab");
         }

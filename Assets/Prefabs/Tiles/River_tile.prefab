@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5265379159928742781}
   - component: {fileID: 5265379159928742780}
   - component: {fileID: -106199583151418146}
+  - component: {fileID: -3692783004948041547}
   m_Layer: 0
   m_Name: River_tile
   m_TagString: Untagged
@@ -119,5 +120,34 @@ MonoBehaviour:
   NetworkGuid:
     RawGuidValue: a2e8ffecac1f3d94e9e95142b3fd0b64
   NestedObjects: []
-  NetworkedBehaviours: []
+  NetworkedBehaviours:
+  - {fileID: -3692783004948041547}
   SimulationBehaviours: []
+--- !u!114 &-3692783004948041547
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5265379159928742783}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _interpolationDataSource: 0
+  InterpolationSpace: 0
+  InterpolationTarget: {fileID: 0}
+  InterpolateErrorCorrection: 1
+  InterpolatedErrorCorrectionSettings:
+    MinRate: 3.3
+    MaxRate: 10
+    PosBlendStart: 0.25
+    PosBlendEnd: 1
+    PosMinCorrection: 0.025
+    PosTeleportDistance: 2
+    RotBlendStart: 0.1
+    RotBlendEnd: 0.5
+    RotTeleportRadians: 1.5
+  UseLegacySharedModeInterpolation: 0
+  TargetInterpolationDelay: 0.03
