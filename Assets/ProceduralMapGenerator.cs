@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Sirenix.OdinInspector;
-using Sirenix.Serialization;
 using Fusion;
 
 [System.Serializable]
@@ -161,7 +160,7 @@ public class ProceduralMapGenerator : NetworkBehaviour
         cloneDict.Clear();
     }
 
-    public BiomePreset GetBiome(float height, float moisture, float heat)
+    BiomePreset GetBiome(float height, float moisture, float heat)
     {
         List<BiomeTempData> biomeTemp = new List<BiomeTempData>();
 
@@ -281,6 +280,7 @@ public class ProceduralMapGenerator : NetworkBehaviour
         if (clone != null)
         {
             clone.name = string.Format("Node {0},{1}", x, z);
+            clone.transform.SetParent(transform);
             cloneDict.Add(cellPos, clone.gameObject);
         }
 

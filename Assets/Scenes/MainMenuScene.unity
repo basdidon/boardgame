@@ -2821,7 +2821,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1375217910
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2846,7 +2846,6 @@ MonoBehaviour:
     - Name: sessionListUpdateDelegate
       Entry: 6
       Data: 
-  playerPrefab: {fileID: 1193584063013450582, guid: 86f2b7ceda5b76b469d009ef80f4efde, type: 3}
 --- !u!4 &1375217911
 Transform:
   m_ObjectHideFlags: 0
@@ -3578,7 +3577,6 @@ MonoBehaviour:
     - Name: sessionListUpdateDelegate
       Entry: 6
       Data: 
-  playerPrefab: {fileID: 0}
 --- !u!4 &1929046331
 Transform:
   m_ObjectHideFlags: 0
