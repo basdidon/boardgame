@@ -23,7 +23,18 @@ public class Node : NetworkBehaviour
         Debug.Log($"SetCellPosition()");
         CellPosition = cellPos;
 
-        var texture = ProceduralMapGenerator.Instance.GetBiomeByCellPos(CellPosition).Texture2D;
+        var texture = ProceduralMapGenerator.Instance.GetBiomeByCellPos(CellPosition).GetTexture2D();
         MeshRenderer.material.mainTexture = texture;
+    }
+
+    private void OnMouseEnter()
+    {
+        Debug.Log($"OnMouseEnter() on {CellPosition}");
+        MeshRenderer.material.SetFloat("_IsFocus",1);
+    }
+
+    private void OnMouseExit()
+    {
+        MeshRenderer.material.SetFloat("_IsFocus", 0);
     }
 }

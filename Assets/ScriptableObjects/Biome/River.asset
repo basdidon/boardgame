@@ -22,15 +22,23 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes:
-    - Name: Texture2D
+    - Name: Texture2DArray
+      Entry: 7
+      Data: 0|UnityEngine.Texture2D[], UnityEngine.CoreModule
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
       Entry: 10
       Data: 0
-    - Name: Texture
-      Entry: 10
-      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
   tilePrefabs:
   - {fileID: 8520182226796934917, guid: 48aab23d7c6bef8498d707aee55a9507, type: 3}
-  texture2D: {fileID: 2800000, guid: 775c9bde2996dc74c8c267a6bed91dcf, type: 3}
   minHeight: 0
   minMoisture: 0.6
   minHeat: 0
