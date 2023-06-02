@@ -8,6 +8,7 @@ using Sirenix.Serialization;
 public class BiomePreset : SerializedScriptableObject
 {
     public GameObject[] tilePrefabs;
+    [OdinSerialize] public Texture2D Texture2D { get; set; }
     public float minHeight;
     public float minMoisture;
     public float minHeat;

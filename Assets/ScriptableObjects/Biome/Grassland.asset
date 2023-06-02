@@ -15,14 +15,22 @@ MonoBehaviour:
   serializationData:
     SerializedFormat: 2
     SerializedBytes: 
-    ReferencedUnityObjects: []
+    ReferencedUnityObjects:
+    - {fileID: 2800000, guid: 08154a4adf096ee459241dbb35b5a1d1, type: 3}
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
-    SerializationNodes: []
+    SerializationNodes:
+    - Name: Texture2D
+      Entry: 10
+      Data: 0
+    - Name: Texture
+      Entry: 10
+      Data: 0
   tilePrefabs:
-  - {fileID: 104090685533154848, guid: f921872ba036fac4f8e014d279109883, type: 3}
+  - {fileID: 8520182226796934917, guid: 48aab23d7c6bef8498d707aee55a9507, type: 3}
+  texture2D: {fileID: 2800000, guid: 08154a4adf096ee459241dbb35b5a1d1, type: 3}
   minHeight: 0
   minMoisture: 0
   minHeat: 0

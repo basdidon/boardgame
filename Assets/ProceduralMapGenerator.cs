@@ -28,14 +28,23 @@ public class BiomeTempData
 
 public class ProceduralMapGenerator : NetworkBehaviour
 {
+    public static ProceduralMapGenerator Instance { get; private set; }
+
+    [BoxGroup("EmptyTile",Order = -11)]
+    [SerializeField] GameObject emptyTilePrefab;
+
     [BoxGroup("Dimensions", Order = -10)]
     [SerializeField] Vector3Int mapSize = new Vector3Int(100, 0, 100);
     [BoxGroup("Dimensions")]  public float scale = 1.0f;
     [BoxGroup("Dimensions")]  public Vector2 offset;
 
     [BoxGroup("Waves", Order = -9)]
-    [PropertyOrder(-2)]
+    [PropertyOrder(-3)]
     public bool isOneSeed;
+    [ShowIf("isOneSeed")]
+    [BoxGroup("Waves")]
+    [PropertyOrder(-2)]
+    public static bool isNewSeed = false;
     [ShowIf("isOneSeed")]
     [BoxGroup("Waves")]
     [PropertyOrder(-1)]
@@ -84,14 +93,23 @@ public class ProceduralMapGenerator : NetworkBehaviour
 
     private void Awake()
     {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else if (Instance != null && Instance != this)
+        {
+            Destroy(this);
+        }
+
         cloneDict = new Dictionary<Vector3Int, GameObject>();
+
     }
 
     /*  - genlevel
      *  -- spawn
      *  -- spawnWithFallAnimation
      */
-
 
     public void GenerateMap()
     {
@@ -160,7 +178,7 @@ public class ProceduralMapGenerator : NetworkBehaviour
         cloneDict.Clear();
     }
 
-    BiomePreset GetBiome(float height, float moisture, float heat)
+    public BiomePreset GetBiome(float height, float moisture, float heat)
     {
         List<BiomeTempData> biomeTemp = new List<BiomeTempData>();
 
@@ -189,8 +207,19 @@ public class ProceduralMapGenerator : NetworkBehaviour
             biomeToReturn = biomes[0];
             Debug.Log("returnDefaultTile");
         }
+        else
+        {
+            Debug.Log(biomeToReturn.name);
+        }
 
         return biomeToReturn;
+    }
+
+    public BiomePreset GetBiome(Vector3Int cellPos)
+    {
+        int x = cellPos.x;
+        int z = cellPos.z;
+        return GetBiome(heightMap[x, z], moistureMap[x, z], heatMap[x, z]);
     }
 
     IEnumerator WaveSpawnTiles(int waveCount=0)
@@ -268,19 +297,27 @@ public class ProceduralMapGenerator : NetworkBehaviour
         }
     }
 
-
     /// Network Spawn
-    NetworkObject NetworkSpawnCellTile(Vector3Int cellPos)
+    public NetworkObject NetworkSpawnCellTile(Vector3Int cellPos)
     {
+        Debug.Log("NetworkSpawnEmptyTile()");
         var x = cellPos.x;
         var z = cellPos.z;
-        GameObject biomeTile = GetBiome(heightMap[x, z], moistureMap[x, z], heatMap[x, z]).GetTilePrefab();
 
-        var clone = NetworkSpawner.Instance.Runner.Spawn(biomeTile, cellPos, Quaternion.identity);
+        var clone = NetworkSpawner.Instance.Runner.Spawn(emptyTilePrefab,cellPos,Quaternion.identity);
         if (clone != null)
         {
             clone.name = string.Format("Node {0},{1}", x, z);
             clone.transform.SetParent(transform);
+            if(clone.TryGetBehaviour(out Node node))
+            {
+                node.SetCellPosition(cellPos);
+            }
+            else
+            {
+                Debug.LogError("Not Found [Node Behaviour]");
+            }
+            
             cloneDict.Add(cellPos, clone.gameObject);
         }
 
@@ -302,4 +339,63 @@ public class ProceduralMapGenerator : NetworkBehaviour
             }
         }
     }
+
+    [Button]
+    [ResetTile(false)]
+    public void NetworkWaveSpawnTiles() => StartCoroutine(IENetworkWaveSpawnTiles());
+
+    IEnumerator IENetworkWaveSpawnTiles(int waveCount = 0)
+    {
+        Debug.Log($"IENetworkWaveSpawnTiles:{waveCount}");
+        List<Vector3Int> cellsPos = new List<Vector3Int>();
+
+        // where cellPos.x + cellPos.y == waveCount , instantiate it
+        for (int x = 0; x < mapSize.x; x++)
+        {
+            if (x > waveCount) continue;
+
+            for (int z = 0; z < mapSize.z; z++)
+            {
+                // Debug.Log($"searching on : {x},{z}");
+                if (x + z == waveCount)
+                {
+                    cellsPos.Add(new Vector3Int(x, 0, z));
+                    break;
+                }
+            }
+        }
+
+        yield return new WaitForSeconds(dalaySpawn);
+        foreach (var cell in cellsPos)
+        {
+            var clone = NetworkSpawnCellTile(cell);
+            if (isFallInTiles)
+                StartCoroutine(FallInTile(clone.transform));
+        }
+
+        if (waveCount < mapSize.x + mapSize.z)
+            yield return IENetworkWaveSpawnTiles(waveCount + 1);
+        else
+            yield return null;
+    }
+}
+
+[System.AttributeUsage(System.AttributeTargets.Method, Inherited = false, AllowMultiple = true)]
+sealed class ResetTileAttribute : System.Attribute
+{
+    // See the attribute guidelines at 
+    //  http://go.microsoft.com/fwlink/?LinkId=85236
+    readonly string positionalString;
+
+    ProceduralMapGenerator Generator { get { return ProceduralMapGenerator.Instance; } }
+
+    // This is a positional argument
+    public ResetTileAttribute(bool isNewSeed)
+    {
+        if (isNewSeed) Generator.RandomOneSeed();
+        Generator.ResetLevel();
+        Generator.GenerateMap();
+    }
+    // This is a named argument
+    public int NamedInt { get; set; }
 }

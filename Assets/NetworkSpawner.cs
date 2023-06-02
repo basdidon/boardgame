@@ -63,6 +63,7 @@ public class NetworkSpawner : SerializedMonoBehaviour, INetworkRunnerCallbacks
 
 
     // Create gameSession
+    [Button("StartGame")]
     public async void StartHost(string roomName)
     {
         var result = await Runner.StartGame(new StartGameArgs()
