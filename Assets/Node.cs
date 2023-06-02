@@ -23,7 +23,7 @@ public class Node : NetworkBehaviour
         Debug.Log($"SetCellPosition()");
         CellPosition = cellPos;
 
-        var texture = ProceduralMapGenerator.Instance.GetBiome(CellPosition).Texture2D;
+        var texture = ProceduralMapGenerator.Instance.GetBiomeByCellPos(CellPosition).Texture2D;
         MeshRenderer.material.mainTexture = texture;
     }
 }

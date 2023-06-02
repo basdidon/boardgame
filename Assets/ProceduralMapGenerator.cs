@@ -34,7 +34,7 @@ public class ProceduralMapGenerator : NetworkBehaviour
     [SerializeField] GameObject emptyTilePrefab;
 
     [BoxGroup("Dimensions", Order = -10)]
-    [SerializeField] Vector3Int mapSize = new Vector3Int(100, 0, 100);
+    [SerializeField] Vector3Int mapSize = new(100, 0, 100);
     [BoxGroup("Dimensions")]  public float scale = 1.0f;
     [BoxGroup("Dimensions")]  public Vector2 offset;
 
@@ -121,53 +121,6 @@ public class ProceduralMapGenerator : NetworkBehaviour
         heatMap = NoiseGenerator.Generate(mapSize.x, mapSize.z, scale, heatWaves, offset);
     }
 
-    GameObject InstatiateCellTile(Vector3Int cellPos)
-    {
-        var x = cellPos.x;
-        var z = cellPos.z;
-        GameObject biomeTile = GetBiome(heightMap[x, z], moistureMap[x, z], heatMap[x, z]).GetTilePrefab();
-        GameObject clone = Instantiate(biomeTile, cellPos, Quaternion.identity, transform);
-        clone.name = string.Format("Node {0},{1}", x, z);
-        cloneDict.Add(cellPos, clone);
-        return clone;
-    }
-
-    [Button]
-    public void SpawnTiles(bool isNewSeed)
-    {
-        if (isNewSeed) RandomOneSeed();
-        ResetLevel();
-        GenerateMap();
-
-        for (int x = 0; x < mapSize.x; ++x)
-        {
-            for (int z = 0; z < mapSize.z; ++z)
-            {
-                InstatiateCellTile(new Vector3Int(x,0,z));
-            }
-        }
-    }
-
-    [Button]
-    public void SpawnTilesDelay(bool isNewSeed)
-    {
-        if (isNewSeed) RandomOneSeed();
-        ResetLevel();
-        GenerateMap();
-
-        StartCoroutine(SpawnTile(Vector3Int.zero));
-    }
-
-    [Button]
-    public void SpawnTilesWaveDelay(bool isNewSeed)
-    {
-        if(isNewSeed) RandomOneSeed();
-        ResetLevel();
-        GenerateMap();
-
-        StartCoroutine(WaveSpawnTiles());
-    }
-
     [ButtonGroup("genLevel")]
     public void ResetLevel()
     {
@@ -176,11 +129,20 @@ public class ProceduralMapGenerator : NetworkBehaviour
             Destroy(t);
         }
         cloneDict.Clear();
+
+        if (isNewSeed)
+        {
+            RandomOneSeed();
+            GenerateMap();
+        }else if (heightMap == null || moistureMap == null || heatMap == null)
+        {
+            GenerateMap();
+        }
     }
 
     public BiomePreset GetBiome(float height, float moisture, float heat)
     {
-        List<BiomeTempData> biomeTemp = new List<BiomeTempData>();
+        List<BiomeTempData> biomeTemp = new();
 
         foreach (BiomePreset biome in biomes)
         {
@@ -202,7 +164,7 @@ public class ProceduralMapGenerator : NetworkBehaviour
             }
         }
 
-        if(biomeToReturn == null)
+        if (biomeToReturn == null)
         {
             biomeToReturn = biomes[0];
             Debug.Log("returnDefaultTile");
@@ -213,72 +175,16 @@ public class ProceduralMapGenerator : NetworkBehaviour
         }
 
         return biomeToReturn;
+        
     }
 
-    public BiomePreset GetBiome(Vector3Int cellPos)
+    public BiomePreset GetBiomeByCellPos(Vector3Int cellPos)
     {
+        Debug.Log("GetBiome(Vector3Int cellPos)");
         int x = cellPos.x;
         int z = cellPos.z;
+        
         return GetBiome(heightMap[x, z], moistureMap[x, z], heatMap[x, z]);
-    }
-
-    IEnumerator WaveSpawnTiles(int waveCount=0)
-    {
-        List<Vector3Int> cellsPos = new List<Vector3Int>();
-        // where cellPos.x + cellPos.y == c , instantiate it
-        for(int x = 0; x < mapSize.x; x++)
-        {
-            if (x > waveCount) continue;
-
-            for (int z = 0; z < mapSize.z; z++)
-            {
-                Debug.Log($"searching on : {x},{z}");
-                if (x + z == waveCount)
-                {
-                    cellsPos.Add(new Vector3Int(x, 0, z));
-                    break;
-                }
-            }
-        }
-
-        yield return new WaitForSeconds(dalaySpawn);
-        foreach(var cell in cellsPos)
-        {
-            var clone = InstatiateCellTile(cell);
-            if (isFallInTiles)
-                StartCoroutine(FallInTile(clone.transform));
-        }
-
-        if (waveCount < mapSize.x + mapSize.z)
-            yield return WaveSpawnTiles(waveCount + 1);
-        else
-            yield return null;
-    }
-
-    IEnumerator SpawnTile(Vector3Int cellPos)
-    {
-        var clone = InstatiateCellTile(cellPos);
-
-        if (isFallInTiles)
-            StartCoroutine(FallInTile(clone.transform));
-
-        if (cellPos.x + 1 < mapSize.x)
-        {
-            yield return new WaitForSeconds(dalaySpawn);
-            yield return SpawnTile(cellPos + Vector3Int.right);
-        }
-        else
-        {
-            if (cellPos.z + 1 < mapSize.z)
-            {
-                yield return new WaitForSeconds(dalaySpawn);
-                yield return SpawnTile(new Vector3Int(0, cellPos.y, cellPos.z + 1));
-            }
-            else
-            {
-                yield return null;
-            }
-        }
     }
 
     IEnumerator FallInTile(Transform transform)
@@ -297,7 +203,6 @@ public class ProceduralMapGenerator : NetworkBehaviour
         }
     }
 
-    /// Network Spawn
     public NetworkObject NetworkSpawnCellTile(Vector3Int cellPos)
     {
         Debug.Log("NetworkSpawnEmptyTile()");
@@ -309,14 +214,11 @@ public class ProceduralMapGenerator : NetworkBehaviour
         {
             clone.name = string.Format("Node {0},{1}", x, z);
             clone.transform.SetParent(transform);
+
             if(clone.TryGetBehaviour(out Node node))
-            {
                 node.SetCellPosition(cellPos);
-            }
             else
-            {
                 Debug.LogError("Not Found [Node Behaviour]");
-            }
             
             cloneDict.Add(cellPos, clone.gameObject);
         }
@@ -325,29 +227,21 @@ public class ProceduralMapGenerator : NetworkBehaviour
     }
 
     [Button]
-    public void NetworkSpawnTiles(bool isNewSeed)
+    public void NetworkSpawnTiles()
     {
-        if (isNewSeed) RandomOneSeed();
         ResetLevel();
-        GenerateMap();
-
         for (int x = 0; x < mapSize.x; ++x)
-        {
             for (int z = 0; z < mapSize.z; ++z)
-            {
                 NetworkSpawnCellTile(new Vector3Int(x, 0, z));
-            }
-        }
     }
 
     [Button]
-    [ResetTile(false)]
-    public void NetworkWaveSpawnTiles() => StartCoroutine(IENetworkWaveSpawnTiles());
+    public void NetworkWaveSpawnTiles() { StartCoroutine(NetworkWaveSpawnTilesCoroutine()); }
 
-    IEnumerator IENetworkWaveSpawnTiles(int waveCount = 0)
+    IEnumerator NetworkWaveSpawnTilesCoroutine(int waveCount = 0)
     {
         Debug.Log($"IENetworkWaveSpawnTiles:{waveCount}");
-        List<Vector3Int> cellsPos = new List<Vector3Int>();
+        List<Vector3Int> cellsPos = new();
 
         // where cellPos.x + cellPos.y == waveCount , instantiate it
         for (int x = 0; x < mapSize.x; x++)
@@ -356,7 +250,6 @@ public class ProceduralMapGenerator : NetworkBehaviour
 
             for (int z = 0; z < mapSize.z; z++)
             {
-                // Debug.Log($"searching on : {x},{z}");
                 if (x + z == waveCount)
                 {
                     cellsPos.Add(new Vector3Int(x, 0, z));
@@ -374,28 +267,8 @@ public class ProceduralMapGenerator : NetworkBehaviour
         }
 
         if (waveCount < mapSize.x + mapSize.z)
-            yield return IENetworkWaveSpawnTiles(waveCount + 1);
+            yield return NetworkWaveSpawnTilesCoroutine(waveCount + 1);
         else
             yield return null;
     }
-}
-
-[System.AttributeUsage(System.AttributeTargets.Method, Inherited = false, AllowMultiple = true)]
-sealed class ResetTileAttribute : System.Attribute
-{
-    // See the attribute guidelines at 
-    //  http://go.microsoft.com/fwlink/?LinkId=85236
-    readonly string positionalString;
-
-    ProceduralMapGenerator Generator { get { return ProceduralMapGenerator.Instance; } }
-
-    // This is a positional argument
-    public ResetTileAttribute(bool isNewSeed)
-    {
-        if (isNewSeed) Generator.RandomOneSeed();
-        Generator.ResetLevel();
-        Generator.GenerateMap();
-    }
-    // This is a named argument
-    public int NamedInt { get; set; }
 }

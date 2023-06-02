@@ -156,7 +156,7 @@ public class NetworkSpawner : SerializedMonoBehaviour, INetworkRunnerCallbacks
         if (Runner.IsServer)
         {
             var generator = FindObjectOfType<ProceduralMapGenerator>();
-            generator.NetworkSpawnTiles(false);
+            generator.NetworkSpawnTiles();
         }
     }
     public void OnSceneLoadStart(NetworkRunner runner) { }
