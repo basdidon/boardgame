@@ -69,17 +69,19 @@ public class ProceduralMapGenerator : NetworkBehaviour
     public BiomePreset[] biomes;
 
     [BoxGroup("Waves")]
-    [Header("Height Map")]
+    [Header("Height Waves")]
     public Wave[] heightWaves;
     private float[,] heightMap;
     [BoxGroup("Waves")]
-    [Header("Moisture Map")]
+    [Header("Moisture Waves")]
     public Wave[] moistureWaves;
     private float[,] moistureMap;
     [BoxGroup("Waves")]
-    [Header("Heat Map")]
+    [Header("Heat Waves")]
     public Wave[] heatWaves;
     private float[,] heatMap;
+
+    public List<NodePreset> NodePresets;
 
     [Space]
     [ShowInInspector]
@@ -216,7 +218,7 @@ public class ProceduralMapGenerator : NetworkBehaviour
             clone.transform.SetParent(transform);
 
             if(clone.TryGetBehaviour(out Node node))
-                node.SetCellPosition(cellPos);
+                node.SetUpNode(cellPos);
             else
                 Debug.LogError("Not Found [Node Behaviour]");
             
@@ -236,7 +238,10 @@ public class ProceduralMapGenerator : NetworkBehaviour
     }
 
     [Button]
-    public void NetworkWaveSpawnTiles() { StartCoroutine(NetworkWaveSpawnTilesCoroutine()); }
+    public void NetworkWaveSpawnTiles() {
+        ResetLevel();
+        StartCoroutine(NetworkWaveSpawnTilesCoroutine()); 
+    }
 
     IEnumerator NetworkWaveSpawnTilesCoroutine(int waveCount = 0)
     {

@@ -7,20 +7,14 @@ using Sirenix.Serialization;
 [CreateAssetMenu(fileName = "NewBiome", menuName = "ScriptableObject/Biome")]
 public class BiomePreset : SerializedScriptableObject
 {
-    public GameObject[] tilePrefabs;
-    [OdinSerialize] public Texture2D[] Texture2DArray { get; set; }
+    [OdinSerialize] public NodeType[] NodeTypes { private get; set; }
     public float minHeight;
     public float minMoisture;
     public float minHeat;
 
-    public GameObject GetTilePrefab()
+    public NodeType GetNodeType()
     {
-        return tilePrefabs[Random.Range(0, tilePrefabs.Length)];
-    }
-
-    public Texture2D GetTexture2D()
-    {
-        return Texture2DArray[Random.Range(0, Texture2DArray.Length)];
+        return NodeTypes[Random.Range(0, NodeTypes.Length)];
     }
 
     public bool MatchCondition(float height, float moisture, float heat)

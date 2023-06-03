@@ -9,34 +9,39 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8822ae8e6a13064418b16d1ef3b48fb7, type: 3}
-  m_Name: River
+  m_Script: {fileID: 11500000, guid: 80d6682a192e3f1429448b840cb09f83, type: 3}
+  m_Name: GrassNode
   m_EditorClassIdentifier: 
   serializationData:
     SerializedFormat: 2
     SerializedBytes: 
     ReferencedUnityObjects:
-    - {fileID: 11400000, guid: 00c2a6331b1ee7d45a10d06e4a2055ef, type: 2}
+    - {fileID: 2800000, guid: 08154a4adf096ee459241dbb35b5a1d1, type: 3}
+    - {fileID: 2800000, guid: f048d648d5fdae940b253b2deb2f08dc, type: 3}
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes:
-    - Name: NodeTypes
+    - Name: Texture2DList
       Entry: 7
-      Data: 0|NodeType[], Assembly-CSharp
+      Data: 0|System.Collections.Generic.List`1[[UnityEngine.Texture2D, UnityEngine.CoreModule]],
+        mscorlib
     - Name: 
       Entry: 12
-      Data: 1
+      Data: 2
     - Name: 
       Entry: 10
       Data: 0
+    - Name: 
+      Entry: 10
+      Data: 1
     - Name: 
       Entry: 13
       Data: 
     - Name: 
       Entry: 8
       Data: 
-  minHeight: 0
-  minMoisture: 0.6
-  minHeat: 0
+    - Name: IsWalkable
+      Entry: 5
+      Data: true

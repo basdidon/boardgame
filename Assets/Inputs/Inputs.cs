@@ -50,6 +50,78 @@ public partial class @Inputs : IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""CameraControl"",
+            ""id"": ""4eef0a17-0eab-4f7a-8af4-0fbd6b64997b"",
+            ""actions"": [
+                {
+                    ""name"": ""Move"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""325758a9-d6f3-40e2-a7a3-f39c42e8ddab"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": ""Arrows"",
+                    ""id"": ""b759328c-5253-4860-944c-e802547e4bcf"",
+                    ""path"": ""2DVector"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""57001608-8182-466c-b389-29f32b6f83c5"",
+                    ""path"": ""<Keyboard>/upArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""247f5777-42bc-412b-837d-86c57fc12067"",
+                    ""path"": ""<Keyboard>/downArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""dfa6ddda-d346-40b9-a69a-e666e255ae8e"",
+                    ""path"": ""<Keyboard>/leftArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""a499d257-600a-4a61-b0b0-5842e8329162"",
+                    ""path"": ""<Keyboard>/rightArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -57,6 +129,9 @@ public partial class @Inputs : IInputActionCollection2, IDisposable
         // Menu
         m_Menu = asset.FindActionMap("Menu", throwIfNotFound: true);
         m_Menu_Quit = m_Menu.FindAction("Quit", throwIfNotFound: true);
+        // CameraControl
+        m_CameraControl = asset.FindActionMap("CameraControl", throwIfNotFound: true);
+        m_CameraControl_Move = m_CameraControl.FindAction("Move", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -145,8 +220,45 @@ public partial class @Inputs : IInputActionCollection2, IDisposable
         }
     }
     public MenuActions @Menu => new MenuActions(this);
+
+    // CameraControl
+    private readonly InputActionMap m_CameraControl;
+    private ICameraControlActions m_CameraControlActionsCallbackInterface;
+    private readonly InputAction m_CameraControl_Move;
+    public struct CameraControlActions
+    {
+        private @Inputs m_Wrapper;
+        public CameraControlActions(@Inputs wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Move => m_Wrapper.m_CameraControl_Move;
+        public InputActionMap Get() { return m_Wrapper.m_CameraControl; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(CameraControlActions set) { return set.Get(); }
+        public void SetCallbacks(ICameraControlActions instance)
+        {
+            if (m_Wrapper.m_CameraControlActionsCallbackInterface != null)
+            {
+                @Move.started -= m_Wrapper.m_CameraControlActionsCallbackInterface.OnMove;
+                @Move.performed -= m_Wrapper.m_CameraControlActionsCallbackInterface.OnMove;
+                @Move.canceled -= m_Wrapper.m_CameraControlActionsCallbackInterface.OnMove;
+            }
+            m_Wrapper.m_CameraControlActionsCallbackInterface = instance;
+            if (instance != null)
+            {
+                @Move.started += instance.OnMove;
+                @Move.performed += instance.OnMove;
+                @Move.canceled += instance.OnMove;
+            }
+        }
+    }
+    public CameraControlActions @CameraControl => new CameraControlActions(this);
     public interface IMenuActions
     {
         void OnQuit(InputAction.CallbackContext context);
+    }
+    public interface ICameraControlActions
+    {
+        void OnMove(InputAction.CallbackContext context);
     }
 }

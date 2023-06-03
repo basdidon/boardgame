@@ -8,6 +8,7 @@ public class Node : NetworkBehaviour
 {
     public MeshRenderer MeshRenderer { get; private set; }
     [SerializeField] Vector3Int CellPosition;
+    [SerializeField] NodeType NodeType;
 
     private void Awake()
     {
@@ -18,13 +19,21 @@ public class Node : NetworkBehaviour
 
     }
 
-    public void SetCellPosition(Vector3Int cellPos)
+    public void SetUpNode(Vector3Int cellPos)
     {
-        Debug.Log($"SetCellPosition()");
+        Debug.Log($"SetUpNode()");
         CellPosition = cellPos;
 
-        var texture = ProceduralMapGenerator.Instance.GetBiomeByCellPos(CellPosition).GetTexture2D();
-        MeshRenderer.material.mainTexture = texture;
+        foreach(var nodePreset in ProceduralMapGenerator.Instance.NodePresets)
+        {
+            if(nodePreset.TryGetValue(CellPosition,out NodeType nodeType))
+            {
+                NodeType = nodeType;
+            }
+        }
+
+        NodeType ??= ProceduralMapGenerator.Instance.GetBiomeByCellPos(CellPosition).GetNodeType();
+        MeshRenderer.material.mainTexture = NodeType.GetTexture2D();
     }
 
     private void OnMouseEnter()
