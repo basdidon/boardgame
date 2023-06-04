@@ -25,7 +25,6 @@ public class CameraController : MonoBehaviour
 
     private void MoveCamera(Vector2 vec2)
     {
-
         transform.position += (transform.right * vec2.x + new Vector3(transform.forward.x, 0, transform.forward.z).normalized * vec2.y) * cameraMoveSpeed;
     }
 }

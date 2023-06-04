@@ -304,6 +304,7 @@ GameObject:
   - component: {fileID: 817469385}
   - component: {fileID: 817469386}
   - component: {fileID: 817469387}
+  - component: {fileID: 817469388}
   m_Layer: 0
   m_Name: Tiles
   m_TagString: Untagged
@@ -394,7 +395,23 @@ MonoBehaviour:
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 817469386}
+  - {fileID: 817469388}
   SimulationBehaviours: []
+--- !u!114 &817469388
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 817469384}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 791b0ae426c6e8442a2adca16a1155af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _interpolationDataSource: 0
+  LineOffset: {x: 0, y: 1, z: 0}
+  directionalMoves: []
 --- !u!1 &848052635
 GameObject:
   m_ObjectHideFlags: 0
@@ -643,4 +660,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   angles: {x: 52.5, y: 52.5, z: 52.5}
   expectedAngles: {x: 60.000004, y: 45, z: 0}
-  cameraMoveSpeed: 1
+  cameraMoveSpeed: 0.3

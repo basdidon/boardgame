@@ -29,7 +29,7 @@ public class LevelManager : NetworkBehaviour
     [Networked] public TeamTurn TeamTurn { get; private set; }
 
     Unit currentTurn;
-    [Networked] public Unit CurrentTurn { 
+    [Networked] public Unit CurrentTurn {
         get 
         { 
             return currentTurn; 
