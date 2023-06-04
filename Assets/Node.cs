@@ -38,7 +38,6 @@ public class Node : NetworkBehaviour
 
     private void OnMouseEnter()
     {
-        Debug.Log($"OnMouseEnter() on {CellPosition}");
         MeshRenderer.material.SetFloat("_IsFocus",1);
     }
 
