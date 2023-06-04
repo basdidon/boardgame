@@ -7,8 +7,9 @@ using Sirenix.OdinInspector;
 public class Node : NetworkBehaviour
 {
     public MeshRenderer MeshRenderer { get; private set; }
-    [SerializeField] Vector3Int CellPosition;
-    [SerializeField] NodeType NodeType;
+    public Vector3Int CellPosition { get; set; }
+    public NodeType NodeType { get; set; }
+    public Unit Unit { get; set; }
 
     private void Awake()
     {
@@ -32,18 +33,40 @@ public class Node : NetworkBehaviour
             }
         }
 
-        NodeType ??= ProceduralMapGenerator.Instance.GetBiomeByCellPos(CellPosition).GetNodeType();
+        if(NodeType == null)
+        {
+            if (ProceduralMapGenerator.NodeTypes.TryGetValue(CellPosition,out NodeType _nodeType))
+            {
+                NodeType = _nodeType;
+            }
+            else
+            {
+                Debug.LogError($"can't get value from NodeTypes");
+            }
+        }
+
         MeshRenderer.material.mainTexture = NodeType.GetTexture2D();
     }
 
-    private void OnMouseEnter()
+    private void OnMouseEnter() 
     {
-        Debug.Log($"OnMouseEnter() on {CellPosition}");
-        MeshRenderer.material.SetFloat("_IsFocus",1);
+        MeshRenderer.material.SetFloat("_IsFocus", 1);
+        BoardManager.Instance.FocusCell = CellPosition;
     }
+    private void OnMouseExit() => MeshRenderer.material.SetFloat("_IsFocus", 0);
 
-    private void OnMouseExit()
+    public bool AssignUnit(Unit unit)
     {
-        MeshRenderer.material.SetFloat("_IsFocus", 0);
+        if(Unit == null)
+        {
+            Unit = unit;
+            Unit.transform.SetParent(transform);
+            Unit.transform.localPosition = Vector3.zero + Vector3.up * 0.5f + unit.offset;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 }

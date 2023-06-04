@@ -129,7 +129,7 @@ public class NetworkSpawner : SerializedMonoBehaviour, INetworkRunnerCallbacks
 
             if(playerPrefab != null)
             {
-                var networkObject = Runner.Spawn(playerPrefab, Vector3.right * player.PlayerId);
+                var networkObject = Runner.Spawn(playerPrefab);
                 Runner.SetPlayerObject(player,networkObject);
             }
             else

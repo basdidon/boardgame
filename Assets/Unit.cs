@@ -5,9 +5,10 @@ using Sirenix.OdinInspector;
 using Fusion;
 
 [System.Serializable]
-public class Unit : NetworkBehaviour
+public class Unit : BoardObject
 {
     LevelManager LevelManager { get { return LevelManager.Instance; } }
+    [SerializeField] public Vector3 offset;
     // Action
     [Button]
     void EndTurn()

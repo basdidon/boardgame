@@ -1,18 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Sirenix.OdinInspector;
 
 public class Player : Unit
 {
-    // Start is called before the first frame update
-    void Start()
+    [Button]
+    public void SetCellPosition(Vector3Int cellPos)
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        BoardManager.AddObject( this,cellPos);
     }
 }

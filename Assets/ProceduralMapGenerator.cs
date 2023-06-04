@@ -51,7 +51,7 @@ public class ProceduralMapGenerator : NetworkBehaviour
     [OnValueChanged("OneSeedChanged")]
     [InlineButton("RandomOneSeed", SdfIconType.Dice6Fill, "Random")]
     public int OneSeed { get; set; }
-    public void OneSeedChanged(int newValue) 
+    public void OneSeedChanged(int newValue)
     {
         IEnumerator[] enumerators = { heightWaves.GetEnumerator(), heatWaves.GetEnumerator(), moistureWaves.GetEnumerator() };
         foreach(var e in enumerators)
@@ -83,9 +83,8 @@ public class ProceduralMapGenerator : NetworkBehaviour
 
     public List<NodePreset> NodePresets;
 
-    [Space]
     [ShowInInspector]
-    Dictionary<Vector3Int, GameObject> cloneDict;
+    public static Dictionary<Vector3Int, NodeType> NodeTypes { get; set; }
 
     [SerializeField] float dalaySpawn = .2f;
     public bool isFallInTiles;
@@ -103,9 +102,6 @@ public class ProceduralMapGenerator : NetworkBehaviour
         {
             Destroy(this);
         }
-
-        cloneDict = new Dictionary<Vector3Int, GameObject>();
-
     }
 
     /*  - genlevel
@@ -121,16 +117,25 @@ public class ProceduralMapGenerator : NetworkBehaviour
         moistureMap = NoiseGenerator.Generate(mapSize.x, mapSize.z, scale, moistureWaves, offset);
         // heat map
         heatMap = NoiseGenerator.Generate(mapSize.x, mapSize.z, scale, heatWaves, offset);
+
+        NodeTypes = new();
+        for (int x = 0; x < mapSize.x; x++) { 
+            for(int z = 0; z < mapSize.z; z++)
+            {
+                Vector3Int cellPos = new(x, 0, z);
+                NodeTypes.Add(cellPos, GetBiomeByCellPos(cellPos).GetNodeType());
+            }
+        }
     }
 
     [ButtonGroup("genLevel")]
     public void ResetLevel()
     {
-        foreach (var t in cloneDict.Values)
+        foreach (var nodeObject in BoardManager.Nodes.Values)
         {
-            Destroy(t);
+            Runner.Despawn(nodeObject);
         }
-        cloneDict.Clear();
+        BoardManager.Nodes.Clear();
 
         if (isNewSeed)
         {
@@ -211,7 +216,7 @@ public class ProceduralMapGenerator : NetworkBehaviour
         var x = cellPos.x;
         var z = cellPos.z;
 
-        var clone = NetworkSpawner.Instance.Runner.Spawn(emptyTilePrefab,cellPos,Quaternion.identity);
+        var clone = Runner.Spawn(emptyTilePrefab,cellPos,Quaternion.identity);
         if (clone != null)
         {
             clone.name = string.Format("Node {0},{1}", x, z);
@@ -222,7 +227,7 @@ public class ProceduralMapGenerator : NetworkBehaviour
             else
                 Debug.LogError("Not Found [Node Behaviour]");
             
-            cloneDict.Add(cellPos, clone.gameObject);
+            BoardManager.Nodes.Add(cellPos, clone);
         }
 
         return clone;
