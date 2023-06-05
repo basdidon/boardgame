@@ -44,11 +44,11 @@ public class PathFinder
         var toSearch = new List<Node>() { startNode };
         var processed = new List<Node>();
 
-        var searchCount = 0;
+        //var searchCount = 0;
 
         while (toSearch.Count > 0)
         {
-            Debug.Log(searchCount++ + "toSearch left:" + toSearch.Count);
+            //Debug.Log(searchCount++ + "toSearch left:" + toSearch.Count);
             Node currentNode = toSearch[0];
             foreach (var t in toSearch)
                 if (t.F < currentNode.F || t.F == currentNode.F && t.H < currentNode.H)
@@ -68,7 +68,8 @@ public class PathFinder
                     if (processed.Exists(e => e.CellPosition == resultCell))
                     {
                         Node processedNode = processed.Find(e => e.CellPosition == resultCell);
-                        Debug.Log("update old node");
+                        //Debug.Log("update old node");
+
                         // if new path use cost less than old node ,update that node
                         processedNode.G = currentNode.G + 1 < processedNode.G ? currentNode.G : processedNode.G;
                         processedNode.directionMoveToNode = newNodePath;
@@ -82,7 +83,7 @@ public class PathFinder
                         }
                         // add new node
                         toSearch.Add(new Node(currentNode.CellPosition + direction, currentNode.G + 1, targetCell, newNodePath));
-                        Debug.Log("add node toSearch");
+                        //Debug.Log("add node toSearch");
                     }
                 }
                 else

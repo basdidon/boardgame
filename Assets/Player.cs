@@ -8,6 +8,12 @@ public class Player : Unit
     [Button]
     public void SetCellPosition(Vector3Int cellPos)
     {
-        BoardManager.AddObject( this,cellPos);
+        BoardManager.Instance.AddObject(this,cellPos);
+    }
+
+    [Button]
+    public void AddObjectRandomRange(Vector3Int a,Vector3Int b)
+    {
+        BoardManager.Instance.AddObjectRandomRange(this, a, b);
     }
 }

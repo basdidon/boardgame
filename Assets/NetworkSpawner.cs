@@ -30,6 +30,9 @@ public class NetworkSpawner : SerializedMonoBehaviour, INetworkRunnerCallbacks
     public delegate void OnSessionListUpdatedDelegate(List<SessionInfo> newList);
     public OnSessionListUpdatedDelegate sessionListUpdateDelegate;
 
+    public delegate void OnPlayerJoinedDelegate(PlayerRef playerRef);
+    public OnPlayerJoinedDelegate playerJoinedDelegate;
+
     public Inputs Inputs { get; set; }
 
     private void OnEnable(){ Inputs.Enable(); }
@@ -104,20 +107,31 @@ public class NetworkSpawner : SerializedMonoBehaviour, INetworkRunnerCallbacks
         }
     }
 
-    public async void StartGame(GameMode mode)
+    public async System.Threading.Tasks.Task<StartGameResult> StartGame(GameMode mode)
     {
         // Create the Fusion runner and let it know that we will be providing user input
         // _runner = gameObject.AddComponent<NetworkRunner>();
         Runner.ProvideInput = true;
 
         // Start or join (depends on gamemode) a session with a specific name
-        await Runner.StartGame(new StartGameArgs()
+        var result = await Runner.StartGame(new StartGameArgs()
         {
             GameMode = mode,
             SessionName = "TestRoom",
             Scene = SceneManager.GetActiveScene().buildIndex,
             SceneManager = gameObject.AddComponent<NetworkSceneManagerDefault>()
         });
+
+        if (result.Ok)
+        {
+            Debug.Log($"started StartGame");
+        }
+        else
+        {
+            Debug.LogError($"Failed to Start: {result.ShutdownReason}");
+        }
+
+        return result;
     }
 
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player) {
@@ -125,7 +139,7 @@ public class NetworkSpawner : SerializedMonoBehaviour, INetworkRunnerCallbacks
         if (Runner.IsServer)
         {
             // spawn Player
-            var playerPrefab = Resources.Load("PlayerPrefab") as GameObject;
+            var playerPrefab = Resources.Load("Player") as GameObject;
 
             if(playerPrefab != null)
             {
@@ -138,6 +152,7 @@ public class NetworkSpawner : SerializedMonoBehaviour, INetworkRunnerCallbacks
             }
 
         }
+        playerJoinedDelegate(player);
     }
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) { }
     public void OnInput(NetworkRunner runner, NetworkInput input) { }

@@ -341,29 +341,31 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _interpolationDataSource: 0
   emptyTilePrefab: {fileID: 8520182226796934917, guid: 48aab23d7c6bef8498d707aee55a9507, type: 3}
-  mapSize: {x: 20, y: 0, z: 20}
+  mapSize: {x: 10, y: 0, z: 10}
   scale: 1
   offset: {x: 0, y: 0}
   isOneSeed: 1
+  isNewSeed: 0
+  OneSeed: 6461
   biomes:
   - {fileID: 11400000, guid: ab73df6b8a4bab5488c8651a0dc5cc65, type: 2}
   - {fileID: 11400000, guid: bac0abdb93fe72348a3e2f38f896434a, type: 2}
   heightWaves:
-  - seed: 252
+  - seed: 6461
     frequency: 0.1
     amplitude: 1
-  - seed: 0
+  - seed: 6461
     frequency: 0.5
     amplitude: 1
   moistureWaves:
-  - seed: 252
+  - seed: 6461
     frequency: 0.3
     amplitude: 1
-  - seed: 0
+  - seed: 6461
     frequency: 0.8
     amplitude: 0.2
   heatWaves:
-  - seed: 252
+  - seed: 6461
     frequency: 0.1
     amplitude: 1
   NodePresets:
@@ -410,7 +412,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _interpolationDataSource: 0
-  LineOffset: {x: 0, y: 1, z: 0}
+  LineOffset: {x: 0, y: 0.6, z: 0}
+  IsFocus: 0
+  FocusCell: {x: 0, y: 0, z: 0}
+  IsCanMoveToFocus: 0
+  IsFreeTileFocus: 0
   directionalMoves: []
 --- !u!1 &848052635
 GameObject:
