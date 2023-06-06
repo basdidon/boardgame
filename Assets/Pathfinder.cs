@@ -59,7 +59,7 @@ public class PathFinder
 
             foreach (var direction in directions)
             {
-                if (BoardManager.Instance.TryDirectionalMove(currentNode.CellPosition, direction, out Vector3Int resultCell))
+                if (BoardManager.Instance.TryDirectionalMove(currentNode.CellPosition, direction,out Vector3Int resultCell))
                 {
 
                     var newNodePath = new List<Vector3Int>(currentNode.directionMoveToNode) { direction };

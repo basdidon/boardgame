@@ -5,6 +5,8 @@ using Fusion;
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
 
+
+
 public class BoardManager : NetworkBehaviour
 {
     public static BoardManager Instance { get; private set; }
@@ -38,27 +40,6 @@ public class BoardManager : NetworkBehaviour
     {
         FocusCell = cellPos;
         OnFocusChanged?.Invoke(cellPos);
-        /*
-        if (IsFocus && LevelManager.Instance.CurrentTurn != null && IsCanMoveTo(FocusCell))
-        {
-            if(ObjectsPosition.TryGetValue(LevelManager.Instance.CurrentTurn,out Vector3Int unitPos)){
-                directionalMoves = PathFinder.FindDirectionMovePath(unitPos, cellPos);
-
-                Vector3[] path = new Vector3[directionalMoves.Count + 1];
-                path[0] = LevelManager.Instance.CurrentTurn.transform.position + LineOffset;
-                for (int i = 0; i < directionalMoves.Count; i++)
-                {
-                    path[i + 1] = path[i] + directionalMoves[i];
-                }
-
-                LineRenderer.positionCount = path.Length;
-                LineRenderer.SetPositions(path);
-            }
-        }
-        else
-        {
-            LineRenderer.positionCount = 0;
-        }*/
     }
 
     public Dictionary<BoardObject, Vector3Int> ObjectsPosition;
@@ -226,7 +207,6 @@ public class BoardManager : NetworkBehaviour
         return false;
     }
 
-    // when you move to any direction in game, may be active some event like IceFloor that won't let you stop and keep you going in same direction,
     public bool TryDirectionalMove(Vector3Int startCell, Vector3Int direction, out Vector3Int resultCell)
     {
         resultCell = Vector3Int.zero;

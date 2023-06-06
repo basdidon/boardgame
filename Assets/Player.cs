@@ -32,6 +32,7 @@ public class Player : Unit
     {
         bool isCanMove = false;
         bool isEndCoroutine = false;
+        List<Vector3Int> moves = new();
         //var focusCell = Vector3Int.zero;
         if (!BoardManager.Instance.TryGetObjectPosition(this, out Vector3Int startPos))
         {
@@ -40,7 +41,7 @@ public class Player : Unit
 
         void UpdateFocusCell(Vector3Int focusCell)
         {
-            if (PathFinder.TryFindPath(startPos, focusCell, out List<Vector3Int> moves))
+            if (PathFinder.TryFindPath(startPos, focusCell, out moves))
             {
                 Vector3[] path = new Vector3[moves.Count + 1];
                 path[0] = LevelManager.Instance.CurrentTurn.transform.position;
@@ -64,7 +65,7 @@ public class Player : Unit
         {
             if (isCanMove)
             {
-                //MoveTo();
+                StartCoroutine(ExecutePath(new Queue<Vector3Int>(moves)));
                 isEndCoroutine = true;
             }
         }
@@ -95,8 +96,16 @@ public class Player : Unit
         }
     }
 
-    public void ExecutePath(List<Vector3Int> moves)
+
+    public IEnumerator ExecutePath(Queue<Vector3Int> movesQueue)
     {
-        Debug.Log($"ExecutePath: {moves}");
+        Debug.Log($"ExecutePath: ");
+
+        if (movesQueue.TryDequeue(out Vector3Int dir))
+        {
+            /////////////////////////////////////////////////
+        }
+
+        yield return null;
     }
 }
