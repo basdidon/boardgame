@@ -10,21 +10,36 @@ public class BoardManager : NetworkBehaviour
     public static BoardManager Instance { get; private set; }
 
     public LineRenderer LineRenderer { get; set; }
+    [field: SerializeField] public Material LineMaterial { get; set; }
     public Vector3 LineOffset;
+    public void DrawLine(Vector3[] vertexs)
+    {
+        if(vertexs == null || vertexs.Length <= 0)
+        {
+            LineRenderer.positionCount = 0;
+        }
+        else
+        {
+            for(int i= 0; i < vertexs.Length; i++)
+            {
+                vertexs[i] += LineOffset;
+            }
+
+            LineRenderer.positionCount = vertexs.Length;
+            LineRenderer.SetPositions(vertexs);
+        }
+    }
 
     [OdinSerialize] public bool IsFocus;
     [OdinSerialize] public Vector3Int FocusCell;
-    public bool IsCanMoveToFocus;
-    public bool IsFreeTileFocus;
+    public System.Action<Vector3Int> OnFocusChanged;
 
     public void SetFocusCell(Vector3Int cellPos)
     {
         FocusCell = cellPos;
-
-        IsCanMoveToFocus = IsCanMoveTo(FocusCell);
-        IsFreeTileFocus = IsFreeTile(FocusCell);
-
-        if (IsFocus && LevelManager.Instance.CurrentTurn != null && IsCanMoveToFocus && IsFreeTileFocus)
+        OnFocusChanged?.Invoke(cellPos);
+        /*
+        if (IsFocus && LevelManager.Instance.CurrentTurn != null && IsCanMoveTo(FocusCell))
         {
             if(ObjectsPosition.TryGetValue(LevelManager.Instance.CurrentTurn,out Vector3Int unitPos)){
                 directionalMoves = PathFinder.FindDirectionMovePath(unitPos, cellPos);
@@ -40,6 +55,10 @@ public class BoardManager : NetworkBehaviour
                 LineRenderer.SetPositions(path);
             }
         }
+        else
+        {
+            LineRenderer.positionCount = 0;
+        }*/
     }
 
     public Dictionary<BoardObject, Vector3Int> ObjectsPosition;
@@ -59,8 +78,9 @@ public class BoardManager : NetworkBehaviour
         }
 
         LineRenderer = gameObject.AddComponent<LineRenderer>();
-        LineRenderer.startColor = Color.blue;
-        LineRenderer.startWidth = .1f;
+        LineRenderer.material = LineMaterial;
+        LineRenderer.startWidth = 0.2f;
+        LineRenderer.positionCount = 0;
 
         ObjectsPosition = new();
         Nodes = new();
@@ -92,6 +112,24 @@ public class BoardManager : NetworkBehaviour
                 nodeType = node.NodeType;
                 return true;
             }
+
+        return false;
+    }
+
+    public bool TryGetObjectPosition(BoardObject boardObject,out Vector3Int cellPos)
+    {
+        cellPos = Vector3Int.zero;
+        if (!ObjectsPosition.ContainsKey(boardObject))
+            return false;
+
+        foreach(var objectPos in ObjectsPosition)
+        {
+            if(objectPos.Key == boardObject)
+            {
+                cellPos = objectPos.Value;
+                return true;
+            }
+        }
 
         return false;
     }
@@ -151,7 +189,7 @@ public class BoardManager : NetworkBehaviour
         ObjectsPosition.Remove(boardObject);
     }
 
-    public bool IsFreeTile(Vector3Int cellPos)  // is This Tile avaliable
+    public bool IsFreeTile(Vector3Int cellPos)  // is This Tile exists and no object on it.
     {
         if (!Nodes.ContainsKey(cellPos))
         {
@@ -179,6 +217,9 @@ public class BoardManager : NetworkBehaviour
      * */
     public bool IsCanMoveTo(Vector3Int cellPos)
     {
+        if (!IsFreeTile(cellPos))
+            return false;
+
         if(TryGetNodeType(cellPos,out NodeType nodeType)){
             return nodeType.IsWalkable;
         }
@@ -190,7 +231,7 @@ public class BoardManager : NetworkBehaviour
     {
         resultCell = Vector3Int.zero;
         var targetPos = startCell + direction;
-        if (IsFreeTile(targetPos) && IsCanMoveTo(targetPos))
+        if (IsCanMoveTo(targetPos))
         {
             resultCell = startCell + direction;
             return true;
