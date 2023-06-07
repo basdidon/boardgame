@@ -135,6 +135,15 @@ public partial class @Inputs : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""MoveCommand"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""95d485f7-2297-401b-8bf3-a45db1cd5088"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": ""Press"",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -146,6 +155,17 @@ public partial class @Inputs : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""LeftButton"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""30fea491-5d03-42ca-89c3-65ea17d281ac"",
+                    ""path"": ""<Keyboard>/m"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MoveCommand"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -163,6 +183,7 @@ public partial class @Inputs : IInputActionCollection2, IDisposable
         // Player
         m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
         m_Player_LeftButton = m_Player.FindAction("LeftButton", throwIfNotFound: true);
+        m_Player_MoveCommand = m_Player.FindAction("MoveCommand", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -289,11 +310,13 @@ public partial class @Inputs : IInputActionCollection2, IDisposable
     private readonly InputActionMap m_Player;
     private IPlayerActions m_PlayerActionsCallbackInterface;
     private readonly InputAction m_Player_LeftButton;
+    private readonly InputAction m_Player_MoveCommand;
     public struct PlayerActions
     {
         private @Inputs m_Wrapper;
         public PlayerActions(@Inputs wrapper) { m_Wrapper = wrapper; }
         public InputAction @LeftButton => m_Wrapper.m_Player_LeftButton;
+        public InputAction @MoveCommand => m_Wrapper.m_Player_MoveCommand;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -306,6 +329,9 @@ public partial class @Inputs : IInputActionCollection2, IDisposable
                 @LeftButton.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnLeftButton;
                 @LeftButton.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnLeftButton;
                 @LeftButton.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnLeftButton;
+                @MoveCommand.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMoveCommand;
+                @MoveCommand.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMoveCommand;
+                @MoveCommand.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMoveCommand;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -313,6 +339,9 @@ public partial class @Inputs : IInputActionCollection2, IDisposable
                 @LeftButton.started += instance.OnLeftButton;
                 @LeftButton.performed += instance.OnLeftButton;
                 @LeftButton.canceled += instance.OnLeftButton;
+                @MoveCommand.started += instance.OnMoveCommand;
+                @MoveCommand.performed += instance.OnMoveCommand;
+                @MoveCommand.canceled += instance.OnMoveCommand;
             }
         }
     }
@@ -328,5 +357,6 @@ public partial class @Inputs : IInputActionCollection2, IDisposable
     public interface IPlayerActions
     {
         void OnLeftButton(InputAction.CallbackContext context);
+        void OnMoveCommand(InputAction.CallbackContext context);
     }
 }

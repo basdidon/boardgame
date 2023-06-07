@@ -7,6 +7,7 @@ using UnityEngine.InputSystem;
 public class Player : Unit
 {
     Inputs Inputs;
+    [SerializeField][Range(1f,10f)] float moveSpeed = 2f;
 
     private void OnEnable() => Inputs.Enable();
     private void OnDisable() => Inputs.Disable();
@@ -14,6 +15,7 @@ public class Player : Unit
     private void Awake()
     {
         Inputs = new Inputs();
+        Inputs.Player.MoveCommand.performed += _ => MoveCommand();
     }
 
     [Button]
@@ -33,18 +35,16 @@ public class Player : Unit
         bool isCanMove = false;
         bool isEndCoroutine = false;
         List<Vector3Int> moves = new();
-        //var focusCell = Vector3Int.zero;
-        if (!BoardManager.Instance.TryGetObjectPosition(this, out Vector3Int startPos))
-        {
-            Debug.LogError("not found in objects postion");
-        }
+        
+        if(BoardManager.IsFocus)
+            UpdateFocusCell(BoardManager.FocusCell);
 
         void UpdateFocusCell(Vector3Int focusCell)
         {
-            if (PathFinder.TryFindPath(startPos, focusCell, out moves))
+            if (PathFinder.TryFindPath(CellPosition, focusCell, out moves))
             {
                 Vector3[] path = new Vector3[moves.Count + 1];
-                path[0] = LevelManager.Instance.CurrentTurn.transform.position;
+                path[0] = CellPosition;
                 for (int i = 0; i < moves.Count; i++)
                 {
                     path[i + 1] = path[i] + moves[i];
@@ -89,6 +89,7 @@ public class Player : Unit
         if(LevelManager.Instance.CurrentTurn == this)
         {
             StartCoroutine(FindpathCoroutine());
+            Debug.Log("MoveCommand was called, waiting for input ........................");
         }
         else
         {
@@ -99,13 +100,29 @@ public class Player : Unit
 
     public IEnumerator ExecutePath(Queue<Vector3Int> movesQueue)
     {
-        Debug.Log($"ExecutePath: ");
-
         if (movesQueue.TryDequeue(out Vector3Int dir))
         {
-            /////////////////////////////////////////////////
+            Debug.Log($"ExecutePath: {dir}");
+            Vector3 start = WorldPosition;
+            CellPosition += dir;
+            Vector3 des = WorldPosition;
+
+            transform.LookAt(des);
+            float LerpDuration = 1/moveSpeed;
+            float timeElapsed = 0f;
+
+            while (timeElapsed < LerpDuration)
+            {
+                transform.position = Vector3.Lerp(start, des, timeElapsed / LerpDuration);
+                yield return null;
+                timeElapsed += Time.deltaTime;
+            }
+
+            transform.position = des;
+            yield return ExecutePath(movesQueue);
         }
 
         yield return null;
+        BoardManager.Instance.DrawLine(null);
     }
 }

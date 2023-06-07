@@ -5,15 +5,31 @@ using Fusion;
 
 public class BoardObject : NetworkBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    protected BoardManager BoardManager { get { return BoardManager.Instance; } }
+    public Vector3Int CellPosition
     {
-        
+        get
+        {
+            if (!BoardManager.TryGetObjectPosition(this, out Vector3Int startPos))
+            {
+                Debug.LogError("not found in objects postion");
+            }
+
+            return startPos;
+        }
+
+        set
+        {
+            if(BoardManager.IsCanMoveTo(value))
+                BoardManager.ObjectsPosition[this] = value;
+        }
     }
 
-    // Update is called once per frame
-    void Update()
+    public Vector3 WorldPosition
     {
-        
+        get
+        {
+            return BoardManager.getWorldPosition(CellPosition);
+        }
     }
 }

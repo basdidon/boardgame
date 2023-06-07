@@ -5,8 +5,6 @@ using Fusion;
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
 
-
-
 public class BoardManager : NetworkBehaviour
 {
     public static BoardManager Instance { get; private set; }
@@ -46,6 +44,8 @@ public class BoardManager : NetworkBehaviour
     public Dictionary<Vector3Int, NetworkObject> Nodes;
 
     public List<Vector3Int> directionalMoves;
+
+    public Vector3 tileScale = Vector3.one;
 
     private void Awake()
     {
@@ -115,12 +115,17 @@ public class BoardManager : NetworkBehaviour
         return false;
     }
 
+    public Vector3 getWorldPosition(Vector3Int cellPos)
+    {
+        return Vector3.Scale(cellPos, tileScale) + Vector3.up / 2;// + tileScale/2;
+    }
+
     public void AddObject(BoardObject boardObject,Vector3Int cellPos)
     {
         if (IsFreeTile(cellPos) && !ObjectsPosition.ContainsValue(cellPos))
         {
             ObjectsPosition.Add(boardObject, cellPos);
-            boardObject.transform.position = cellPos;
+            boardObject.transform.position = boardObject.WorldPosition;
         }
     }
 

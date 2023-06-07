@@ -102,6 +102,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _interpolationDataSource: 0
   offset: {x: 0, y: 0.6, z: 0}
+  moveSpeed: 3
 --- !u!1001 &7886961251286011547
 PrefabInstance:
   m_ObjectHideFlags: 0

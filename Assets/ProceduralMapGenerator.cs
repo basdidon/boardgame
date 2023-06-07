@@ -35,27 +35,10 @@ public class ProceduralMapGenerator : NetworkBehaviour
     [SerializeField] GameObject emptyTilePrefab;
 
     [BoxGroup("Dimensions", Order = -10)]
-    [SerializeField] Vector3Int mapSize = new(100, 0, 100);
+    public Vector3Int mapSize = new(100, 0, 100);
     [BoxGroup("Dimensions")]  public float scale = 1.0f;
     [BoxGroup("Dimensions")]  public Vector2 offset;
-    /*
-    public bool Toggle = true;
 
-    [ShowIfGroup("Toggle")]
-    [BoxGroup("Toggle/Shown Box")]
-    public int A, B;
-    [BoxGroup("Toggle/Shown Box")]
-    public string c;
-
-    [BoxGroup("Box")]
-    public InfoMessageType EnumField = InfoMessageType.Info;
-
-    [BoxGroup("Box")]
-    [ShowIfGroup("Box/Toggle")]
-    public Vector3 X, Y;*/
-    /// <summary>
-    /// ////////////////////////
-    /// </summary>
     [BoxGroup("IsOneSeed")]
     public bool isOneSeed;
 
