@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Sirenix.OdinInspector;
 using Fusion;
+using Sirenix.OdinInspector;
+using Sirenix.Serialization;
 
 [System.Serializable]
 public class Wave
@@ -39,19 +40,17 @@ public class ProceduralMapGenerator : NetworkBehaviour
     [BoxGroup("Dimensions")]  public float scale = 1.0f;
     [BoxGroup("Dimensions")]  public Vector2 offset;
 
-    [BoxGroup("Waves", Order = -9)]
-    [PropertyOrder(-3)]
+    [BoxGroup("IsOneSeed")]
     public bool isOneSeed;
-    [ShowIf("isOneSeed")]
-    [BoxGroup("Waves")]
-    [PropertyOrder(-2)]
-    public static bool isNewSeed = false;
-    [ShowIf("isOneSeed")]
-    [BoxGroup("Waves")]
-    [PropertyOrder(-1)]
+
+    [ShowIfGroup("IsOneSeed/Properties/isOneSeed")]
+    [BoxGroup("IsOneSeed/Properties")]
+    public bool isNewSeed = false;
+    [ShowIfGroup("IsOneSeed/Properties/isOneSeed")]
+    [BoxGroup("IsOneSeed/Properties")]
     [OnValueChanged("OneSeedChanged")]
     [InlineButton("RandomOneSeed", SdfIconType.Dice6Fill, "Random")]
-    public int OneSeed { get; set; }
+    public int OneSeed;
     public void OneSeedChanged(int newValue)
     {
         IEnumerator[] enumerators = { heightWaves.GetEnumerator(), heatWaves.GetEnumerator(), moistureWaves.GetEnumerator() };
@@ -132,12 +131,11 @@ public class ProceduralMapGenerator : NetworkBehaviour
     [ButtonGroup("genLevel")]
     public void ResetLevel()
     {
-        foreach (var nodeObject in BoardManager.Nodes.Values)
+        foreach (var nodeObject in BoardManager.Instance.Nodes.Values)
         {
             Runner.Despawn(nodeObject);
         }
-
-        BoardManager.Nodes.Clear();
+        BoardManager.Instance.Nodes.Clear();
 
         if (isNewSeed)
         {
@@ -231,7 +229,7 @@ public class ProceduralMapGenerator : NetworkBehaviour
             else
                 Debug.LogError("Not Found [Node Behaviour]");
             
-            BoardManager.Nodes.Add(cellPos, clone);
+            BoardManager.Instance.Nodes.Add(cellPos, clone);
         }
 
         return clone;
@@ -285,4 +283,24 @@ public class ProceduralMapGenerator : NetworkBehaviour
         else
             yield return null;
     }
+
+    // ################################### For Debug #######################################################
+    [Button(ButtonHeight = 200)]
+    public async void StartNetwork()
+    {
+        var go = new GameObject("NetworkRunner");
+        var spawner = go.AddComponent<NetworkSpawner>();
+        var result = await spawner.StartGame(GameMode.Single);
+
+        if (result.Ok)
+        {
+            NetworkSpawner.Instance.playerJoinedDelegate += playerRef =>
+            {
+                Runner.GetPlayerObject(playerRef).GetBehaviour<Player>().AddObjectRandomRange(Vector3Int.zero,new Vector3Int(2,0,2));
+                LevelManager.Instance.StartLevel();
+            };
+        }
+
+    }
+
 }

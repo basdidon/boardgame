@@ -100,6 +100,54 @@
                     "isPartOfComposite": true
                 }
             ]
+        },
+        {
+            "name": "Player",
+            "id": "c0ee953f-db3b-470f-bb07-553649471462",
+            "actions": [
+                {
+                    "name": "LeftButton",
+                    "type": "PassThrough",
+                    "id": "f1c8250b-4a05-43a8-976e-776d7adc809a",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "MoveCommand",
+                    "type": "PassThrough",
+                    "id": "95d485f7-2297-401b-8bf3-a45db1cd5088",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Press",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "e3ebcb3b-4d63-4d27-b5ed-6e5707a4bc0a",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LeftButton",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "30fea491-5d03-42ca-89c3-65ea17d281ac",
+                    "path": "<Keyboard>/m",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MoveCommand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": []

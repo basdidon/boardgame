@@ -31,6 +31,65 @@ public class PathFinder
         }
     }
 
+    public static bool TryFindPath(Vector3Int startCell,Vector3Int targetCell, out List<Vector3Int> directionMoves)
+    {
+        directionMoves = new();
+
+        if (!BoardManager.IsFreeTile(targetCell))
+        {
+            Debug.Log("target can't reach");
+            return false;
+        }
+
+        Node startNode = new (startCell, 0, targetCell);
+        var toSearch = new List<Node>() { startNode };
+        var processed = new List<Node>();
+
+        List<Vector3Int> directions = new() { Vector3Int.forward, Vector3Int.back, Vector3Int.left, Vector3Int.right };
+
+        while (toSearch.Count > 0)
+        {
+            Node currentNode = toSearch[0];
+            foreach (var t in toSearch)
+                if (t.F < currentNode.F || t.F == currentNode.F && t.H < currentNode.H)
+                    currentNode = t;
+
+            processed.Add(currentNode);
+            toSearch.Remove(currentNode);
+
+            foreach (var direction in directions)
+            {
+                if (BoardManager.Instance.TryDirectionalMove(currentNode.CellPosition, direction,out Vector3Int resultCell))
+                {
+
+                    var newNodePath = new List<Vector3Int>(currentNode.directionMoveToNode) { direction };
+                    if (processed.Exists(e => e.CellPosition == resultCell))
+                    {
+                        Node processedNode = processed.Find(e => e.CellPosition == resultCell);
+
+                        // if new path use cost less than old node ,update that node
+                        processedNode.G = currentNode.G + 1 < processedNode.G ? currentNode.G : processedNode.G;
+                        processedNode.directionMoveToNode = newNodePath;
+                    }
+                    else
+                    {
+                        if (currentNode.CellPosition + direction == targetCell)
+                        {
+                            Debug.Log("found");
+                            directionMoves = newNodePath;
+                            return true;
+                        }
+                        // add new node
+                        toSearch.Add(new Node(currentNode.CellPosition + direction, currentNode.G + 1, targetCell, newNodePath));
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /*
     public static List<Vector3Int> FindDirectionMovePath(Vector3Int startCell, Vector3Int targetCell)
     {
         var directionMoves = new List<Vector3Int>();
@@ -44,11 +103,11 @@ public class PathFinder
         var toSearch = new List<Node>() { startNode };
         var processed = new List<Node>();
 
-        var searchCount = 0;
+        //var searchCount = 0;
 
         while (toSearch.Count > 0)
         {
-            Debug.Log(searchCount++ + "toSearch left:" + toSearch.Count);
+            //Debug.Log(searchCount++ + "toSearch left:" + toSearch.Count);
             Node currentNode = toSearch[0];
             foreach (var t in toSearch)
                 if (t.F < currentNode.F || t.F == currentNode.F && t.H < currentNode.H)
@@ -68,7 +127,8 @@ public class PathFinder
                     if (processed.Exists(e => e.CellPosition == resultCell))
                     {
                         Node processedNode = processed.Find(e => e.CellPosition == resultCell);
-                        Debug.Log("update old node");
+                        //Debug.Log("update old node");
+
                         // if new path use cost less than old node ,update that node
                         processedNode.G = currentNode.G + 1 < processedNode.G ? currentNode.G : processedNode.G;
                         processedNode.directionMoveToNode = newNodePath;
@@ -82,7 +142,7 @@ public class PathFinder
                         }
                         // add new node
                         toSearch.Add(new Node(currentNode.CellPosition + direction, currentNode.G + 1, targetCell, newNodePath));
-                        Debug.Log("add node toSearch");
+                        //Debug.Log("add node toSearch");
                     }
                 }
                 else
@@ -94,4 +154,5 @@ public class PathFinder
 
         return directionMoves;
     }
+    */
 }

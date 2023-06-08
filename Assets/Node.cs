@@ -51,9 +51,13 @@ public class Node : NetworkBehaviour
     private void OnMouseEnter() 
     {
         MeshRenderer.material.SetFloat("_IsFocus", 1);
-        BoardManager.Instance.FocusCell = CellPosition;
+        BoardManager.Instance.IsFocus = true;
+        BoardManager.Instance.SetFocusCell(CellPosition);
     }
-    private void OnMouseExit() => MeshRenderer.material.SetFloat("_IsFocus", 0);
+    private void OnMouseExit() { 
+        MeshRenderer.material.SetFloat("_IsFocus", 0);
+        BoardManager.Instance.IsFocus = false;
+    }
 
     public bool AssignUnit(Unit unit)
     {
