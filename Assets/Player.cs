@@ -7,6 +7,15 @@ using UnityEngine.InputSystem;
 public class Player : Unit
 {
     Inputs Inputs;
+    [InlineButton("RollADice", SdfIconType.Dice6Fill, "Roll")]
+    public Dice[] Dices = new Dice[5];
+    public void RollADice()
+    {
+        foreach(Dice dice in Dices){
+            dice.Roll();
+        }
+    }
+    
     [SerializeField][Range(1f,10f)] float moveSpeed = 2f;
 
     private void OnEnable() => Inputs.Enable();

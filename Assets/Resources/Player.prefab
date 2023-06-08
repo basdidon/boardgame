@@ -102,6 +102,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _interpolationDataSource: 0
   offset: {x: 0, y: 0.6, z: 0}
+  Dices:
+  - <DiceData>k__BackingField: {fileID: 11400000, guid: b6800fe2777e0bd45a241084ceca4771, type: 2}
+    <Result>k__BackingField: {fileID: 0}
+  - <DiceData>k__BackingField: {fileID: 11400000, guid: b6800fe2777e0bd45a241084ceca4771, type: 2}
+    <Result>k__BackingField: {fileID: 0}
+  - <DiceData>k__BackingField: {fileID: 11400000, guid: b6800fe2777e0bd45a241084ceca4771, type: 2}
+    <Result>k__BackingField: {fileID: 0}
   moveSpeed: 3
 --- !u!1001 &7886961251286011547
 PrefabInstance:
