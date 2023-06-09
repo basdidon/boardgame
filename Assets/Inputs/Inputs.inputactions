@@ -148,6 +148,34 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "Dice",
+            "id": "78414add-7c0c-438a-999b-97d74b648b57",
+            "actions": [
+                {
+                    "name": "Roll",
+                    "type": "PassThrough",
+                    "id": "6cc3f6d4-32d7-4107-bd4a-f8988555031f",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "ab52003e-3e02-464c-84ca-d55b65bf86cb",
+                    "path": "<Keyboard>/r",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Roll",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": []

@@ -170,6 +170,34 @@ public partial class @Inputs : IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Dice"",
+            ""id"": ""78414add-7c0c-438a-999b-97d74b648b57"",
+            ""actions"": [
+                {
+                    ""name"": ""Roll"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""6cc3f6d4-32d7-4107-bd4a-f8988555031f"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""ab52003e-3e02-464c-84ca-d55b65bf86cb"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Roll"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -184,6 +212,9 @@ public partial class @Inputs : IInputActionCollection2, IDisposable
         m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
         m_Player_LeftButton = m_Player.FindAction("LeftButton", throwIfNotFound: true);
         m_Player_MoveCommand = m_Player.FindAction("MoveCommand", throwIfNotFound: true);
+        // Dice
+        m_Dice = asset.FindActionMap("Dice", throwIfNotFound: true);
+        m_Dice_Roll = m_Dice.FindAction("Roll", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -346,6 +377,39 @@ public partial class @Inputs : IInputActionCollection2, IDisposable
         }
     }
     public PlayerActions @Player => new PlayerActions(this);
+
+    // Dice
+    private readonly InputActionMap m_Dice;
+    private IDiceActions m_DiceActionsCallbackInterface;
+    private readonly InputAction m_Dice_Roll;
+    public struct DiceActions
+    {
+        private @Inputs m_Wrapper;
+        public DiceActions(@Inputs wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Roll => m_Wrapper.m_Dice_Roll;
+        public InputActionMap Get() { return m_Wrapper.m_Dice; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(DiceActions set) { return set.Get(); }
+        public void SetCallbacks(IDiceActions instance)
+        {
+            if (m_Wrapper.m_DiceActionsCallbackInterface != null)
+            {
+                @Roll.started -= m_Wrapper.m_DiceActionsCallbackInterface.OnRoll;
+                @Roll.performed -= m_Wrapper.m_DiceActionsCallbackInterface.OnRoll;
+                @Roll.canceled -= m_Wrapper.m_DiceActionsCallbackInterface.OnRoll;
+            }
+            m_Wrapper.m_DiceActionsCallbackInterface = instance;
+            if (instance != null)
+            {
+                @Roll.started += instance.OnRoll;
+                @Roll.performed += instance.OnRoll;
+                @Roll.canceled += instance.OnRoll;
+            }
+        }
+    }
+    public DiceActions @Dice => new DiceActions(this);
     public interface IMenuActions
     {
         void OnQuit(InputAction.CallbackContext context);
@@ -358,5 +422,9 @@ public partial class @Inputs : IInputActionCollection2, IDisposable
     {
         void OnLeftButton(InputAction.CallbackContext context);
         void OnMoveCommand(InputAction.CallbackContext context);
+    }
+    public interface IDiceActions
+    {
+        void OnRoll(InputAction.CallbackContext context);
     }
 }
