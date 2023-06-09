@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<< HEAD:Assets/Resources/PlayerPrefab.prefab.meta
+guid: 88abb6fdf4dd2244d99db130f6d3592e
+=======
 guid: d07e64841d243dd4399d5303057a0e5f
+>>>>>>> 9c43c58df7b4ca9705323b9c1b09b73ad89a1bc6:Assets/Resources/Player.prefab.meta
 labels:
 - FusionPrefab
 PrefabImporter:

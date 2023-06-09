@@ -35,7 +35,8 @@ public class ProceduralMapGenerator : NetworkBehaviour
     [SerializeField] GameObject emptyTilePrefab;
 
     [BoxGroup("Dimensions", Order = -10)]
-    public Vector3Int mapSize = new(100, 0, 100);
+    [SerializeField] Vector3Int mapSize = new(100, 0, 100);
+    [SerializeField] Vector3 NodeScale = new(3f,3f,3f);
     [BoxGroup("Dimensions")]  public float scale = 1.0f;
     [BoxGroup("Dimensions")]  public Vector2 offset;
 
@@ -215,11 +216,13 @@ public class ProceduralMapGenerator : NetworkBehaviour
         var x = cellPos.x;
         var z = cellPos.z;
 
-        var clone = Runner.Spawn(emptyTilePrefab,cellPos,Quaternion.identity);
+        var clone = Runner.Spawn(emptyTilePrefab, Vector3.Scale(cellPos, NodeScale * 2) + NodeScale, Quaternion.identity);
+
         if (clone != null)
         {
             clone.name = string.Format("Node {0},{1}", x, z);
             clone.transform.SetParent(transform);
+            clone.transform.localScale = NodeScale * 2;
 
             if(clone.TryGetBehaviour(out Node node))
                 node.SetUpNode(cellPos);
