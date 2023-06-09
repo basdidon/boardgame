@@ -19,6 +19,12 @@ public class MapDiceTexture : MonoBehaviour
     [OnValueChanged("OnUvsChanged")]
     public Vector2[] uvs;
 
+
+    [Header("Roll")]
+    public float thust = 100f;
+    public float torqueForceMin = 100f;
+    public float torqueFroceMax = 10000f;
+
     [Button]
     public void UpdateUvs()
     {
@@ -76,16 +82,33 @@ public class MapDiceTexture : MonoBehaviour
         if (TryGetComponent(out Rigidbody rigidbody))
         {
             Rigidbody = rigidbody;
-            Rigidbody.mass = 0.25f;
+            Rigidbody.mass = 100f;
         }
         
         Inputs = new Inputs();
         Inputs.Dice.Roll.performed += _ =>
         {
             Debug.Log("Rolling");
-            Rigidbody.AddForceAtPosition(Vector3.up * 100f, Vector3.down);
-            Rigidbody.AddTorque(Vector3.right * 100f);
+            Rigidbody.AddForceAtPosition(Vector3.up * thust * Rigidbody.mass, Vector3.down);
+
+            StartCoroutine(AddTorque(3f));
+
         };
+    }
+
+    IEnumerator AddTorque(float duration)
+    {
+        Vector3 torqueDir = new(Random.Range(-1, 1), Random.Range(-1, 1), Random.Range(-1, 1));
+        float timeElapsed = 0;
+        while(timeElapsed < duration)
+        {
+            Debug.Log("Tilting");
+            Rigidbody.AddTorque(torqueDir.normalized * Random.Range(torqueForceMin, torqueFroceMax));
+            timeElapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        
     }
 
     private void Start()
